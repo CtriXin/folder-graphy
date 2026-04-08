@@ -25,6 +25,8 @@
 | **够用** | Agent 场景：定位符号 → 读取文件 → 回答用户 |
 | **自动** | Session hook 自动维护索引 |
 | **结构化** | 支持 JSON 输出，方便 Agent 消费 |
+| **自愈** | 查询前自动检查 stale index，必要时重建 |
+| **Monorepo-aware** | 优先当前 app/package、支持 scope 与 changed 邻域查询 |
 
 ### 快速开始
 
@@ -46,6 +48,9 @@ npm install && npm run build
 # 构建索引
 map /path/to/project
 
+# 查看索引状态
+map status --cwd /path/to/project
+
 # 查询定义
 map-find handleMessage
 
@@ -54,6 +59,12 @@ map-callers getAgentBrand
 
 # 查询引用
 map-refs loadConfig
+
+# 只查指定 scope
+map-find handleMessage --scope src/adapter
+
+# 围绕 git 变更附近查 refs/callers
+map-refs loadConfig --changed
 
 # JSON 输出（Agent 用）
 map-find handleMessage --json
@@ -111,7 +122,15 @@ SQLite 存储：symbol → file:line:column
 - `node_modules/`, `dist/`, `build/`, `.git/`, `vendor/`
 - `*.d.ts`, `*.map`, `*.min.js`
 
-可扩展：通过 `FileFilter` 接口自定义（为增量索引预留）。
+可扩展：通过 `FileFilter` 接口自定义（为增量索引预留），也支持项目根 `map.config.json`：
+
+```json
+{
+  "ignore": ["public/assets/**", "ios/App/App/public/assets/**"],
+  "workspaceRoots": ["apps", "packages"],
+  "priorityRoots": ["src", "app", "server"]
+}
+```
 
 ### 性能
 
@@ -126,9 +145,12 @@ SQLite 存储：symbol → file:line:column
 - [x] 噪音过滤
 - [x] JSON 输出
 - [x] 自动 hook 集成
+- [x] stale 检测与按需重建
+- [x] 结果排序（src/ 优先）
+- [x] monorepo-aware ranking / scope / changed 邻域查询
+- [x] 项目级 ignore 配置
 - [ ] 增量索引（大项目场景）
 - [ ] 模糊匹配
-- [ ] 结果排序（src/ 优先）
 
 ### License
 
@@ -159,6 +181,8 @@ Existing tools (LSP, gopls) are too heavy:
 | **Good Enough** | Agent workflow: locate symbol → read file → answer |
 | **Automatic** | Session hook auto-maintains index |
 | **Structured** | JSON output for Agent consumption |
+| **Self-healing** | Query checks stale index and rebuilds when needed |
+| **Monorepo-aware** | Prefers nearby app/package results and supports scope/changed queries |
 
 ### Quick Start
 
@@ -180,6 +204,9 @@ npm install && npm run build
 # Build index
 map /path/to/project
 
+# Check index status
+map status --cwd /path/to/project
+
 # Find definition
 map-find handleMessage
 
@@ -188,6 +215,12 @@ map-callers getAgentBrand
 
 # Find references
 map-refs loadConfig
+
+# Limit to a scope
+map-find handleMessage --scope src/adapter
+
+# Focus around git changes
+map-refs loadConfig --changed
 
 # JSON output (for Agents)
 map-find handleMessage --json
@@ -245,7 +278,15 @@ Default exclusions:
 - `node_modules/`, `dist/`, `build/`, `.git/`, `vendor/`
 - `*.d.ts`, `*.map`, `*.min.js`
 
-Extensible: Custom `FileFilter` interface (reserved for incremental indexing).
+Extensible: via `FileFilter` and project-level `map.config.json`:
+
+```json
+{
+  "ignore": ["public/assets/**", "ios/App/App/public/assets/**"],
+  "workspaceRoots": ["apps", "packages"],
+  "priorityRoots": ["src", "app", "server"]
+}
+```
 
 ### Performance
 
@@ -260,9 +301,12 @@ Extensible: Custom `FileFilter` interface (reserved for incremental indexing).
 - [x] Noise filtering
 - [x] JSON output
 - [x] Auto hook integration
+- [x] Stale detection with rebuild-on-demand
+- [x] Result ranking (prefer src/)
+- [x] Monorepo-aware ranking / scope / changed-neighborhood query
+- [x] Project-level ignore configuration
 - [ ] Incremental indexing (large projects)
 - [ ] Fuzzy matching
-- [ ] Result ranking (src/ priority)
 
 ### License
 

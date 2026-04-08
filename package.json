@@ -1,6 +1,6 @@
 {
   "name": "@ctrixin/map",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Lightweight code indexing tool for TypeScript/Go projects - optimized for AI Agents",
   "main": "dist/index.js",
   "type": "module",

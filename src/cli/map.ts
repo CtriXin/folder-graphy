@@ -3,8 +3,8 @@ import { existsSync } from "fs";
 import { resolve } from "path";
 import { buildIndex } from "../indexer/builder.js";
 import { findCallers, findDefinition, findReferences, formatResult } from "../query/engine.js";
-import { findProjectRoot } from "../project.js";
-import { ensureMapIndex, parseQueryCliOptions, resolveQueryProject } from "./shared.js";
+import { findProjectRoot, getMapStatus } from "../project.js";
+import { ensureMapIndex, parseQueryCliOptions, resolveQueryProject, toQueryOptions } from "./shared.js";
 
 function isPathLike(value: string): boolean {
   return value === "." || value.startsWith("/") || value.startsWith("./") || value.startsWith("../");
@@ -12,9 +12,11 @@ function isPathLike(value: string): boolean {
 
 function usage(): void {
   console.log("Usage: map [path]");
-  console.log("       map find <symbol> [--cwd <dir>] [--json]");
-  console.log("       map callers <symbol> [--cwd <dir>] [--json]");
-  console.log("       map refs <symbol> [--cwd <dir>] [--json]");
+  console.log("       map index [path]");
+  console.log("       map status [--cwd <dir>] [--json]");
+  console.log("       map find <symbol> [--cwd <dir>] [--scope <path>] [--changed] [--from <ref>] [--to <ref>] [--json]");
+  console.log("       map callers <symbol> [--cwd <dir>] [--scope <path>] [--changed] [--from <ref>] [--to <ref>] [--json]");
+  console.log("       map refs <symbol> [--cwd <dir>] [--scope <path>] [--changed] [--from <ref>] [--to <ref>] [--json]");
   console.log("");
   console.log("If the first argument looks like a path, map builds the index.");
   console.log("If the first argument is a symbol, map finds definitions.");
@@ -37,19 +39,39 @@ async function runBuild(inputPath?: string): Promise<void> {
   console.log(`Definitions: ${result.definitionCount}, Files: ${result.sourceFileCount}`);
 }
 
-async function printResults(mode: "find" | "callers" | "refs", symbol: string, args: string[]): Promise<void> {
+function printStatus(args: string[]): void {
   const { cwd, json } = parseQueryCliOptions(args, 0);
   const projectPath = resolveQueryProject(cwd);
-  await ensureMapIndex(projectPath);
-  const options = { cwd: projectPath };
-  const results =
-    mode === "find"
-      ? findDefinition(symbol, options)
-      : mode === "callers"
-        ? findCallers(symbol, options)
-        : findReferences(symbol, options);
+  const status = getMapStatus(projectPath);
 
   if (json) {
+    console.log(JSON.stringify(status, null, 2));
+    return;
+  }
+
+  console.log(`Project: ${status.projectPath}`);
+  console.log(`Type: ${status.projectType ?? "unknown"}`);
+  console.log(`Indexed: ${status.indexed ? "yes" : "no"}`);
+  console.log(`Fresh: ${status.indexed && !status.stale ? "yes" : "no"}`);
+  console.log(`Files: current=${status.sourceFileCount ?? "n/a"}, indexed=${status.indexedFileCount ?? "n/a"}`);
+  console.log(`SCIP: ${status.layout.scipPath}`);
+  console.log(`SQLite: ${status.layout.dbPath}`);
+  console.log(`Reasons: ${status.reasons.length === 0 ? "fresh" : status.reasons.join(", ")}`);
+}
+
+async function printResults(mode: "find" | "callers" | "refs", symbol: string, args: string[]): Promise<void> {
+  const cliOptions = parseQueryCliOptions(args, 0);
+  const projectPath = resolveQueryProject(cliOptions.cwd);
+  await ensureMapIndex(projectPath);
+  const queryOptions = toQueryOptions(cliOptions, projectPath);
+  const results =
+    mode === "find"
+      ? findDefinition(symbol, queryOptions)
+      : mode === "callers"
+        ? findCallers(symbol, queryOptions)
+        : findReferences(symbol, queryOptions);
+
+  if (cliOptions.json) {
     console.log(JSON.stringify(results, null, 2));
     return;
   }
@@ -79,6 +101,11 @@ async function main(): Promise<void> {
 
   if (command === "index") {
     await runBuild(maybeSymbol);
+    return;
+  }
+
+  if (command === "status") {
+    printStatus([maybeSymbol, ...rest].filter((value): value is string => Boolean(value)));
     return;
   }
 

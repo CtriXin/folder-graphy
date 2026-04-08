@@ -69,7 +69,7 @@ const GO_PATTERNS: DefinitionPattern[] = [
 
 function indexerCommand(projectType: ProjectType, scipPath: string): { cmd: string; args: string[] } {
   if (projectType === "typescript") {
-    return { cmd: "scip-typescript", args: ["index", "--output", scipPath] };
+    return { cmd: "scip-typescript", args: ["index", "--infer-tsconfig", "--output", scipPath] };
   }
   return { cmd: "scip-go", args: ["index", "--output", scipPath] };
 }

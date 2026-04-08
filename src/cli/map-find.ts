@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { findDefinition, formatResult } from "../query/engine.js";
-import { ensureMapIndex, parseQueryCliOptions, resolveQueryProject } from "./shared.js";
+import { ensureMapIndex, parseQueryCliOptions, resolveQueryProject, toQueryOptions } from "./shared.js";
 
 function usage(): void {
-  console.error("Usage: map-find <symbol> [--cwd <dir>] [--json]");
+  console.error("Usage: map-find <symbol> [--cwd <dir>] [--scope <path>] [--changed] [--from <ref>] [--to <ref>] [--json]");
 }
 
 async function main(): Promise<void> {
@@ -14,12 +14,12 @@ async function main(): Promise<void> {
   }
 
   const symbol = args[0];
-  const { cwd, json } = parseQueryCliOptions(args);
-  const projectPath = resolveQueryProject(cwd);
+  const cliOptions = parseQueryCliOptions(args);
+  const projectPath = resolveQueryProject(cliOptions.cwd);
   await ensureMapIndex(projectPath);
 
-  const results = findDefinition(symbol, { cwd: projectPath });
-  if (json) {
+  const results = findDefinition(symbol, toQueryOptions(cliOptions, projectPath));
+  if (cliOptions.json) {
     console.log(JSON.stringify(results, null, 2));
     return;
   }

@@ -46,11 +46,16 @@ test -f "$DB_PATH" || { fail "Missing SQLite index at $DB_PATH"; exit 1; }
 test -f "$SCIP_PATH" || { fail "Missing SCIP index at $SCIP_PATH"; exit 1; }
 ok "map index artifacts created"
 
+info "Step 1b: Checking map status"
+STATUS_OUTPUT="$(node "$MAP_CLI" status --cwd "$AGENT_IM_PATH")"
+echo "$STATUS_OUTPUT"
+echo "$STATUS_OUTPUT" | grep -q "Fresh: yes" || { fail "map status did not report a fresh index"; exit 1; }
+ok "map status reports a fresh index"
+
 info "Step 2: Query definition for handleMessage"
 QUERY_OUTPUT="$(node "$MAP_FIND_CLI" handleMessage --cwd "$AGENT_IM_PATH")"
 echo "$QUERY_OUTPUT"
 echo "$QUERY_OUTPUT" | grep -q "handleMessage" || { fail "handleMessage definition not found"; exit 1; }
-# Assert no noise in results
 echo "$QUERY_OUTPUT" | grep -E "(dist/|node_modules/|\.d\.ts)" && { fail "Noise found in definition query results"; exit 1; } || true
 ok "Definition query returned handleMessage (no noise)"
 
@@ -58,7 +63,6 @@ info "Step 3: Query callers for getAgentBrand"
 CALLERS_OUTPUT="$(node "$MAP_CALLERS_CLI" getAgentBrand --cwd "$AGENT_IM_PATH")"
 echo "$CALLERS_OUTPUT"
 echo "$CALLERS_OUTPUT" | grep -q "thread-ops.ts" || { fail "Expected getAgentBrand callers missing"; exit 1; }
-# Assert no noise in results
 echo "$CALLERS_OUTPUT" | grep -E "(dist/|node_modules/|\.d\.ts)" && { fail "Noise found in callers query results"; exit 1; } || true
 ok "Callers query returned getAgentBrand usage (no noise)"
 
@@ -66,17 +70,25 @@ info "Step 4: Query refs for loadConfig"
 REFS_OUTPUT="$(node "$MAP_REFS_CLI" loadConfig --cwd "$AGENT_IM_PATH")"
 echo "$REFS_OUTPUT"
 echo "$REFS_OUTPUT" | grep -q "main.ts" || { fail "Expected loadConfig reference missing"; exit 1; }
-# Assert no noise in results
 echo "$REFS_OUTPUT" | grep -E "(dist/|node_modules/|\.d\.ts)" && { fail "Noise found in refs query results"; exit 1; } || true
 ok "Reference query returned loadConfig usage (no noise)"
 
 info "Step 5: JSON output test"
 JSON_OUTPUT="$(node "$MAP_FIND_CLI" loadConfig --cwd "$AGENT_IM_PATH" --json)"
 echo "$JSON_OUTPUT" | head -20
-# Verify valid JSON and expected fields
-echo "$JSON_OUTPUT" | jq -e '.[0].file' >/dev/null 2>&1 || { fail "JSON output missing 'file' field"; exit 1; }
-echo "$JSON_OUTPUT" | jq -e '.[0].line' >/dev/null 2>&1 || { fail "JSON output missing 'line' field"; exit 1; }
-echo "$JSON_OUTPUT" | jq -e '.[0].kind' >/dev/null 2>&1 || { fail "JSON output missing 'kind' field"; exit 1; }
+JSON_PAYLOAD="$JSON_OUTPUT" node <<'NODE'
+const payload = process.env.JSON_PAYLOAD ?? "";
+const data = JSON.parse(payload);
+if (!Array.isArray(data) || data.length === 0) {
+  throw new Error("JSON output must be a non-empty array");
+}
+const first = data[0];
+for (const key of ["file", "line", "kind"]) {
+  if (!(key in first)) {
+    throw new Error(`JSON output missing ${key}`);
+  }
+}
+NODE
 ok "JSON output is valid with expected schema"
 
 info "All map checks passed"
