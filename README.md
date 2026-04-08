@@ -36,6 +36,10 @@
 # macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/CtriXin/folder-graphy/main/bin/install.sh | bash
 
+# 固定到指定 release / 分支
+curl -fsSL https://raw.githubusercontent.com/CtriXin/folder-graphy/main/bin/install.sh | bash -s -- --ref v0.3.1
+curl -fsSL https://raw.githubusercontent.com/CtriXin/folder-graphy/main/bin/install.sh | bash -s -- --main
+
 # 或手动 clone
 git clone https://github.com/CtriXin/folder-graphy.git
 cd folder-graphy
@@ -191,6 +195,10 @@ Existing tools (LSP, gopls) are too heavy:
 ```bash
 # macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/CtriXin/folder-graphy/main/bin/install.sh | bash
+
+# Pin to a release / branch
+curl -fsSL https://raw.githubusercontent.com/CtriXin/folder-graphy/main/bin/install.sh | bash -s -- --ref v0.3.1
+curl -fsSL https://raw.githubusercontent.com/CtriXin/folder-graphy/main/bin/install.sh | bash -s -- --main
 
 # Or manual clone
 git clone https://github.com/CtriXin/folder-graphy.git

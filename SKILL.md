@@ -1,6 +1,6 @@
 ---
 name: map
-version: "0.3.0"
+version: "0.3.1"
 description: "Map —— 为 TypeScript/Go 项目构建本地代码索引，并提供 definition / callers / refs 查询。"
 argument-hint: '<path> | status | <symbol> | find <symbol> | callers <symbol> | refs <symbol>'
 allowed-tools: Read, Write, Bash, Grep, Glob
