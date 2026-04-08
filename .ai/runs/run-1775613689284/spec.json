@@ -1,0 +1,13 @@
+{
+  "id": "run-1775613689284",
+  "goal": "读取并执行 .ai/mcp/latest-goal.md 中的规划",
+  "cwd": "/Users/xin/auto-skills/CtriXin-repo/folder-graphy",
+  "mode": "balanced",
+  "done_conditions": [],
+  "max_rounds": 6,
+  "max_worker_retries": 2,
+  "max_replans": 1,
+  "allow_auto_merge": false,
+  "stop_on_high_risk": true,
+  "created_at": "2026-04-08T02:01:29.284Z"
+}

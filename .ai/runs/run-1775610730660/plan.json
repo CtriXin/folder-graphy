@@ -1,0 +1,230 @@
+{
+  "id": "plan-1775610818006",
+  "goal": "Build an MMS code knowledge graph system (Graphify alternative) in /Users/xin/auto-skills/CtriXin-repo/folder-graphy",
+  "cwd": "/Users/xin/auto-skills/CtriXin-repo/folder-graphy",
+  "tasks": [
+    {
+      "id": "task-1",
+      "description": "Create project structure and core configuration files (package.json, tsconfig.json, .gitignore)",
+      "complexity": "low",
+      "category": "config",
+      "estimated_files": [
+        "package.json",
+        "tsconfig.json",
+        ".gitignore"
+      ],
+      "acceptance_criteria": [
+        "Project can be initialized with npm install",
+        "TypeScript compilation works",
+        "Basic folder structure exists (src/, dist/, scripts/)"
+      ],
+      "discuss_threshold": 0.5,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for low config task"
+    },
+    {
+      "id": "task-2",
+      "description": "Design and create SQLite database schema for storing symbols, files, relationships, and git state",
+      "complexity": "medium",
+      "category": "schema",
+      "estimated_files": [
+        "src/db/schema.ts",
+        "src/db/migrations/001_initial.sql"
+      ],
+      "acceptance_criteria": [
+        "Schema includes tables: symbols, files, relationships, git_index_state",
+        "Supports symbol types: function, class, interface, method, variable",
+        "Supports relationship types: defines, imports, calls, implements, extends"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-k2.5",
+      "assignment_reason": "Assigned by registry for medium schema task"
+    },
+    {
+      "id": "task-3",
+      "description": "Implement SCIP index parser to read scip-typescript/scip-go output and populate database",
+      "complexity": "medium-high",
+      "category": "algorithms",
+      "estimated_files": [
+        "src/parsers/scip-parser.ts"
+      ],
+      "acceptance_criteria": [
+        "Parses SCIP index protobuf format",
+        "Extracts symbol definitions with name, kind, location (file, line, column)",
+        "Extracts symbol relationships (references, implementations)",
+        "Maps SCIP symbol descriptors to internal symbol IDs"
+      ],
+      "discuss_threshold": 0.7,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-for-coding",
+      "assignment_reason": "Assigned by registry for medium-high algorithms task"
+    },
+    {
+      "id": "task-4",
+      "description": "Create TypeScript indexer wrapper that runs scip-typescript and feeds output to parser",
+      "complexity": "medium",
+      "category": "utils",
+      "estimated_files": [
+        "src/indexers/typescript-indexer.ts",
+        "scripts/index-ts.sh"
+      ],
+      "acceptance_criteria": [
+        "Runs scip-typescript on target directory",
+        "Feeds SCIP output to parser",
+        "Handles errors gracefully with meaningful messages",
+        "Returns list of indexed files and symbol count"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for medium utils task"
+    },
+    {
+      "id": "task-5",
+      "description": "Create Go indexer wrapper that runs scip-go and feeds output to parser",
+      "complexity": "medium",
+      "category": "utils",
+      "estimated_files": [
+        "src/indexers/go-indexer.ts",
+        "scripts/index-go.sh"
+      ],
+      "acceptance_criteria": [
+        "Runs scip-go on target directory",
+        "Feeds SCIP output to parser",
+        "Handles errors gracefully with meaningful messages",
+        "Returns list of indexed files and symbol count"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for medium utils task"
+    },
+    {
+      "id": "task-6",
+      "description": "Implement git diff tracker for incremental indexing of changed files only",
+      "complexity": "medium",
+      "category": "utils",
+      "estimated_files": [
+        "src/indexers/git-tracker.ts"
+      ],
+      "acceptance_criteria": [
+        "Detects changed files via git diff against last indexed commit",
+        "Identifies added, modified, deleted files",
+        "Stores last indexed commit hash in database",
+        "Provides list of files needing re-indexing"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for medium utils task"
+    },
+    {
+      "id": "task-7",
+      "description": "Build query API for answering 'where is this function defined' and 'who calls this function'",
+      "complexity": "medium",
+      "category": "api",
+      "estimated_files": [
+        "src/queries/symbol-queries.ts"
+      ],
+      "acceptance_criteria": [
+        "findDefinition(symbolName) returns file path, line, column, symbol kind",
+        "findCallers(symbolName) returns list of calling locations with context",
+        "findReferences(symbolName) returns all references including imports",
+        "Supports fuzzy matching for symbol names"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-k2.5",
+      "assignment_reason": "Assigned by registry for medium api task"
+    },
+    {
+      "id": "task-8",
+      "description": "Create CLI interface with commands: index, query, stats, and reset",
+      "complexity": "medium",
+      "category": "api",
+      "estimated_files": [
+        "src/cli.ts"
+      ],
+      "acceptance_criteria": [
+        "index [path] command indexes the directory",
+        "query <symbol> command searches for symbol definition/references",
+        "stats command shows index statistics (files, symbols, relationships)",
+        "reset command clears the database",
+        "Exit codes: 0 for success, 1 for error, 2 for not found"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-k2.5",
+      "assignment_reason": "Assigned by registry for medium api task"
+    },
+    {
+      "id": "task-9",
+      "description": "Integrate with MindKeeper thread mechanism - auto-update index on project session entry",
+      "complexity": "medium",
+      "category": "api",
+      "estimated_files": [
+        "src/integrations/mindkeeper-bridge.ts",
+        "scripts/mindkeeper-hook.sh"
+      ],
+      "acceptance_criteria": [
+        "Provides hook script for MindKeeper to call on session start",
+        "Auto-detects project root from git repository",
+        "Runs incremental index update for changed files",
+        "Logs indexing results to stderr for debugging"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-k2.5",
+      "assignment_reason": "Assigned by registry for medium api task"
+    },
+    {
+      "id": "task-10",
+      "description": "Test end-to-end by indexing agent-im directory and verifying basic queries work",
+      "complexity": "medium",
+      "category": "tests",
+      "estimated_files": [
+        "tests/e2e/index-agent-im.test.ts",
+        "tests/fixtures/sample.ts"
+      ],
+      "acceptance_criteria": [
+        "Successfully indexes ../agent-im directory",
+        "Can answer 'where is X defined' for at least 5 known functions",
+        "Can answer 'who calls Y' for at least 3 known call relationships",
+        "Incremental update works after file modification",
+        "All tests pass with npm test"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-k2.5",
+      "assignment_reason": "Assigned by registry for medium tests task"
+    }
+  ],
+  "execution_order": [
+    [
+      "task-1",
+      "task-2",
+      "task-3",
+      "task-4",
+      "task-5",
+      "task-6",
+      "task-7",
+      "task-8",
+      "task-9",
+      "task-10"
+    ]
+  ],
+  "context_flow": {},
+  "created_at": "2026-04-08T01:13:38.006Z"
+}

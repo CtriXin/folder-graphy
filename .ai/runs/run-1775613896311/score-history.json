@@ -1,0 +1,107 @@
+{
+  "run_id": "run-1775613896311",
+  "goal": "构建 MMS 代码知识图谱系统 - 实现初次可用版本\n\n目录：/Users/xin/auto-skills/CtriXin-repo/folder-graphy\n\n**采用双轨方案**：\n1. Track A（主）：SCIP indexers → SQLite\n2. Track B（备选）：tree-sitter 极简提取\n\n**需要交付的功能**：\n1. 安装/配置 SCIP indexers (scip-typescript for TS, scip-go for Go)\n2. SQLite schema 设计：nodes(symbol/file), edges(defines/imports/calls/references)\n3. SCIP 输出解析并导入 SQLite 的脚本\n4. 基础查询 API：\n   - findDefinition(symbol) → 定位定义\n   - findReferences(symbol) → 查找引用\n   - findCallers(function) → 查找调用者\n5. CLI 工具：fg-index (构建索引), fg-query (查询)\n6. 增量更新：基于 git diff 感知变更文件\n7. MindKeeper 整合：session 进入项目时自动触发索引更新\n\n**验收测试**：\n- 在 /Users/xin/auto-skills/CtriXin-repo/agent-im 目录成功构建完整索引\n- 能正确回答：\"handleMessage 函数在哪里定义？\"、\"谁调用了 sendDiscordMessage？\"\n\n**技术栈**：TypeScript/Node.js + SQLite (better-sqlite3)",
+  "updated_at": "2026-04-08T03:40:33.023Z",
+  "latest_score": 89,
+  "best_score": 89,
+  "rounds": [
+    {
+      "run_id": "run-1775613896311",
+      "round": 1,
+      "action": "execute",
+      "status": "partial",
+      "created_at": "2026-04-08T02:17:15.122Z",
+      "score": 66,
+      "summary": "score 66 | workers 9/10 | reviews 3/10 | verification 0/0 | discuss 0 | changed 3 | fragments 33",
+      "signals": {
+        "worker_count": 10,
+        "worker_success_count": 9,
+        "review_count": 10,
+        "review_pass_count": 3,
+        "verification_count": 0,
+        "verification_pass_count": 0,
+        "verification_fail_count": 0,
+        "discuss_triggered_count": 0,
+        "changed_files_count": 3,
+        "prompt_fragment_usage": {
+          "exact_api_signatures": 8,
+          "acceptance_checklist": 10,
+          "strict_file_boundary": 10,
+          "json_structure_sample": 5
+        },
+        "prompt_policy_version_usage": {
+          "worker-policy-v1": 10
+        },
+        "total_duration_ms": 1936116,
+        "total_input_tokens": 346954,
+        "total_output_tokens": 31281
+      }
+    },
+    {
+      "run_id": "run-1775613896311",
+      "round": 2,
+      "action": "repair_task",
+      "status": "partial",
+      "created_at": "2026-04-08T03:24:48.896Z",
+      "score": 80,
+      "summary": "score 80 | workers 9/10 | reviews 6/10 | verification 0/0 | discuss 0 | changed 10 | fragments 11",
+      "signals": {
+        "worker_count": 10,
+        "worker_success_count": 9,
+        "review_count": 10,
+        "review_pass_count": 6,
+        "verification_count": 0,
+        "verification_pass_count": 0,
+        "verification_fail_count": 0,
+        "discuss_triggered_count": 0,
+        "changed_files_count": 10,
+        "prompt_fragment_usage": {
+          "strict_file_boundary": 3,
+          "acceptance_checklist": 3,
+          "json_structure_sample": 3,
+          "exact_api_signatures": 2
+        },
+        "prompt_policy_version_usage": {
+          "worker-policy-v1": 3
+        },
+        "total_duration_ms": 4610339,
+        "total_input_tokens": 359700,
+        "total_output_tokens": 42436
+      },
+      "delta_from_previous": 14
+    },
+    {
+      "run_id": "run-1775613896311",
+      "round": 3,
+      "action": "repair_task",
+      "status": "partial",
+      "created_at": "2026-04-08T03:40:33.023Z",
+      "score": 89,
+      "summary": "score 89 | workers 9/10 | reviews 8/10 | verification 0/0 | discuss 0 | changed 12 | fragments 11",
+      "signals": {
+        "worker_count": 10,
+        "worker_success_count": 9,
+        "review_count": 10,
+        "review_pass_count": 8,
+        "verification_count": 0,
+        "verification_pass_count": 0,
+        "verification_fail_count": 0,
+        "discuss_triggered_count": 0,
+        "changed_files_count": 12,
+        "prompt_fragment_usage": {
+          "strict_file_boundary": 3,
+          "acceptance_checklist": 3,
+          "json_structure_sample": 3,
+          "exact_api_signatures": 2
+        },
+        "prompt_policy_version_usage": {
+          "worker-policy-v1": 3
+        },
+        "total_duration_ms": 4569854,
+        "total_input_tokens": 309905,
+        "total_output_tokens": 41135
+      },
+      "delta_from_previous": 9
+    }
+  ]
+}

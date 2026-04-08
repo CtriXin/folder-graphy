@@ -1,0 +1,19 @@
+{
+  "plan_id": "plan-1775613708171",
+  "completed_groups": 1,
+  "completed_task_ids": [
+    "task-a"
+  ],
+  "context_cache": {
+    "task-a": {
+      "from_task": "task-a",
+      "summary": "{\"type\":\"system\",\"subtype\":\"init\",\"cwd\":\"/Users/xin/auto-skills/.claude/worktrees/worker-task-a\",\"session_id\":\"99de22bd-61bb-4d61-9c09-ef90f8443793\",\"tools\":[\"Task\",\"Bash\",\"Glob\",\"Grep\",\"ExitPlanMode\",\"Read\",\"Edit\",\"MultiEdit\",\"Write\",\"NotebookEdit\",\"WebFetch\",\"TodoWrite\",\"WebSearch\",\"BashOutput\",\"KillShell\",\"SlashCommand\",\"mcp__excalidraw__read_me\",\"mcp__excalidraw__create_view\",\"mcp__excalidraw__export_to_excalidraw\",\"mcp__excalidraw__save_checkpoint\",\"mcp__excalidraw__read_checkpoint\",\"ListMc",
+      "key_outputs": [],
+      "decisions_made": []
+    }
+  },
+  "worker_results_refs": [
+    "task-a"
+  ],
+  "updated_at": "2026-04-08T02:03:09.769Z"
+}

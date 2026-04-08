@@ -1,0 +1,13 @@
+{
+  "id": "run-1775610730660",
+  "goal": "在 /Users/xin/auto-skills/CtriXin-repo/folder-graphy 构建 MMS 代码知识图谱系统（Graphify 替代方案）\n\n**采用方案**：双轨验证（SCIP + 极简 tree-sitter）\n- Track A: SCIP indexers (scip-typescript, scip-go) → SQLite\n- Track B: 极简 tree-sitter 提取 TypeScript defines/imports/calls\n\n**目标**：初次可用（完成 Track A 即可交付基础功能，Track B 后续补充）\n\n**核心需求**：\n1. 能解析 TypeScript 和 Go 代码结构\n2. 提取函数/类/接口定义、import 关系、调用关系\n3. 存储到 SQLite，支持基础查询\n4. 与 MindKeeper thread 机制整合（session 进入项目时自动更新索引）\n5. 提供简单 CLI/API 供 AI 查询\n\n**验收标准**：\n- 在 agent-im 目录能成功构建索引\n- 能回答\"某个函数在哪里定义\"、\"谁调用了这个函数\"等基础查询\n- 增量更新（git diff 感知变更文件）\n\n**P2 规划（暂不执行）**：\n- 语义提取（文档、注释）\n- 可视化界面\n- 更多语言支持\n- 性能优化（大仓库、查询缓存）",
+  "cwd": "/Users/xin/auto-skills/CtriXin-repo/folder-graphy",
+  "mode": "balanced",
+  "done_conditions": [],
+  "max_rounds": 6,
+  "max_worker_retries": 2,
+  "max_replans": 1,
+  "allow_auto_merge": false,
+  "stop_on_high_risk": true,
+  "created_at": "2026-04-08T01:12:10.660Z"
+}

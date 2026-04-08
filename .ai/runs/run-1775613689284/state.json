@@ -1,0 +1,156 @@
+{
+  "run_id": "run-1775613689284",
+  "status": "done",
+  "round": 2,
+  "completed_task_ids": [
+    "task-a"
+  ],
+  "failed_task_ids": [],
+  "review_failed_task_ids": [],
+  "merged_task_ids": [],
+  "retry_counts": {
+    "task-a": 1
+  },
+  "replan_count": 0,
+  "task_states": {
+    "task-a": {
+      "task_id": "task-a",
+      "status": "verified",
+      "round": 2,
+      "changed_files": [
+        "read-goal.ts"
+      ],
+      "merged": false,
+      "worker_success": true,
+      "review_passed": true
+    }
+  },
+  "task_verification_results": {
+    "task-a": []
+  },
+  "repair_history": [
+    {
+      "task_id": "task-a",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "fixed",
+      "note": "repair review passed"
+    }
+  ],
+  "round_cost_history": [
+    {
+      "round": 1,
+      "action": "execute",
+      "cost_estimate": {
+        "opus_tokens": 0,
+        "sonnet_tokens": 0,
+        "haiku_tokens": 0,
+        "domestic_tokens": 26262,
+        "estimated_cost_usd": 0.012424999999999999
+      },
+      "token_breakdown": {
+        "stages": [
+          {
+            "stage": "planner",
+            "model": "qwen3-max",
+            "input_tokens": 7022,
+            "output_tokens": 0
+          },
+          {
+            "stage": "worker:task-a",
+            "model": "glm-5-turbo",
+            "input_tokens": 18943,
+            "output_tokens": 297
+          }
+        ],
+        "total_input": 25965,
+        "total_output": 297,
+        "actual_cost_usd": 0.012424999999999999,
+        "claude_equivalent_usd": 0.078786,
+        "savings_usd": 0.066361
+      },
+      "budget_status": {
+        "monthly_limit_usd": 100,
+        "current_spent_usd": 31.40833791666666,
+        "remaining_usd": 68.59166208333335,
+        "remaining_ratio": 0.6859166208333335,
+        "warn_at": 0.2,
+        "block": false,
+        "blocked": false,
+        "warning": null
+      }
+    },
+    {
+      "round": 2,
+      "action": "repair_task",
+      "cost_estimate": {
+        "opus_tokens": 0,
+        "sonnet_tokens": 0,
+        "haiku_tokens": 0,
+        "domestic_tokens": 19635,
+        "estimated_cost_usd": 0.026066944444444445
+      },
+      "token_breakdown": {
+        "stages": [
+          {
+            "stage": "worker:task-a",
+            "model": "glm-5-turbo",
+            "input_tokens": 2997,
+            "output_tokens": 1361
+          },
+          {
+            "stage": "cross-review:task-a",
+            "model": "kimi-for-coding",
+            "input_tokens": 15127,
+            "output_tokens": 150
+          },
+          {
+            "stage": "a2a:task-a",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          }
+        ],
+        "total_input": 18124,
+        "total_output": 1511,
+        "actual_cost_usd": 0.026066944444444445,
+        "claude_equivalent_usd": 0.058905,
+        "savings_usd": 0.03283805555555555
+      },
+      "budget_status": {
+        "monthly_limit_usd": 100,
+        "current_spent_usd": 31.434404861111105,
+        "remaining_usd": 68.5655951388889,
+        "remaining_ratio": 0.6856559513888889,
+        "warn_at": 0.2,
+        "block": false,
+        "blocked": false,
+        "warning": null
+      }
+    }
+  ],
+  "policy_hook_results": [],
+  "verification_results": [],
+  "budget_status": {
+    "monthly_limit_usd": 100,
+    "current_spent_usd": 31.434404861111105,
+    "remaining_usd": 68.5655951388889,
+    "remaining_ratio": 0.6856559513888889,
+    "warn_at": 0.2,
+    "block": false,
+    "blocked": false,
+    "warning": null
+  },
+  "budget_warning": null,
+  "next_action": {
+    "kind": "finalize",
+    "reason": "All review and verification gates passed.",
+    "task_ids": []
+  },
+  "updated_at": "2026-04-08T02:04:38.158Z",
+  "current_plan_id": "plan-1775613708171",
+  "_smokeResults": {
+    "task-a": true
+  },
+  "final_summary": "1/1 reviews passed; 0 failed; verification passed; $0.0385 (saved $0.0992 vs Claude)."
+}

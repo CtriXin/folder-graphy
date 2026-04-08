@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "run_id": "plan-1775614269643",
+  "cwd": "/Users/xin/auto-skills/CtriXin-repo/folder-graphy",
+  "origin_cwd": "/Users/xin/auto-skills/CtriXin-repo/cc-official-broker",
+  "task_cwd": "/Users/xin/auto-skills/CtriXin-repo/folder-graphy",
+  "goal": "构建 MMS 代码知识图谱系统 - 初次可用版本",
+  "status": "partial",
+  "round": 1,
+  "summary": "MCP execution finished with review failures.",
+  "next_action": "repair_task: Some tasks failed review during MCP execution.",
+  "score": 61,
+  "room_refs": [],
+  "bridge_refs": [],
+  "advisory_focus": [],
+  "merge_blockers": [],
+  "worker_focus": [
+    {
+      "task_id": "task-1",
+      "agent_id": "task-1@plan-1775614269643",
+      "status": "completed",
+      "task_summary": "Result: error_max_turns (ok)",
+      "transcript_path": ".ai/runs/plan-1775614269643/workers/task-1.transcript.jsonl"
+    },
+    {
+      "task_id": "task-2",
+      "agent_id": "task-2@plan-1775614269643",
+      "status": "completed",
+      "task_summary": "Result: success (ok)",
+      "transcript_path": ".ai/runs/plan-1775614269643/workers/task-2.transcript.jsonl"
+    },
+    {
+      "task_id": "task-3",
+      "agent_id": "task-3@plan-1775614269643",
+      "status": "completed",
+      "task_summary": "Result: success (ok)",
+      "transcript_path": ".ai/runs/plan-1775614269643/workers/task-3.transcript.jsonl"
+    }
+  ],
+  "suggested_commands": [
+    "hive status",
+    "hive workers task-1",
+    "hive score"
+  ],
+  "detail_sources": [
+    ".ai/runs/plan-1775614269643/state.json",
+    ".ai/runs/plan-1775614269643/workers/task-1.transcript.jsonl",
+    ".ai/plan/current.md"
+  ],
+  "restore_prompt": "You are resuming a Hive run after compact/clear/new.\nUse this packet as the primary context. Do not ask for a broad recap first.\n\nRun: plan-1775614269643\nGoal: 构建 MMS 代码知识图谱系统 - 初次可用版本\nStatus: partial\nRound: 1\nSummary: MCP execution finished with review failures.\nNext action: repair_task: Some tasks failed review during MCP execution.\nScore: 61\nMindkeeper thread: -\nPrimary worker: task-1 | task-1@plan-1775614269643 | completed\nPrimary worker summary: Result: error_max_turns (ok)\nPrimary transcript: .ai/runs/plan-1775614269643/workers/task-1.transcript.jsonl\nMerge blockers: none\nCollab room: none\nMindkeeper linked rooms: none\nHuman bridge threads: none\nAdvisory scoring: none\n\nRecovery order:\n1. hive status\n2. hive workers task-1\n3. hive score\n\nOnly if deeper context is needed, inspect these sources in order:\n1. .ai/runs/plan-1775614269643/state.json\n2. .ai/runs/plan-1775614269643/workers/task-1.transcript.jsonl\n3. .ai/plan/current.md\n\nWhen continuing work, stay on the current Hive mainline and keep output concise."
+}

@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+*.log
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Cache
+*.db
+*.db-journal
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude/Hive artifacts
+.ai/
+.claude/
+
+# Test outputs
+test-agent-im.sh

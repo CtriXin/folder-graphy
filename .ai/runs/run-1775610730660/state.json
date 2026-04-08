@@ -1,0 +1,818 @@
+{
+  "run_id": "run-1775610730660",
+  "status": "partial",
+  "round": 4,
+  "completed_task_ids": [
+    "task-1",
+    "task-3",
+    "task-4",
+    "task-5",
+    "task-6",
+    "task-9",
+    "task-10"
+  ],
+  "failed_task_ids": [
+    "task-2",
+    "task-3",
+    "task-5",
+    "task-6",
+    "task-7",
+    "task-8",
+    "task-10"
+  ],
+  "review_failed_task_ids": [
+    "task-2",
+    "task-3",
+    "task-5",
+    "task-6",
+    "task-7",
+    "task-8",
+    "task-10"
+  ],
+  "merged_task_ids": [],
+  "retry_counts": {
+    "task-2": 2,
+    "task-3": 2,
+    "task-4": 2,
+    "task-5": 2,
+    "task-6": 2,
+    "task-7": 2,
+    "task-8": 2,
+    "task-9": 2,
+    "task-10": 2
+  },
+  "replan_count": 0,
+  "task_states": {
+    "task-1": {
+      "task_id": "task-1",
+      "status": "verified",
+      "round": 3,
+      "changed_files": [
+        ".gitignore",
+        "package-lock.json",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "merged": false,
+      "worker_success": true,
+      "review_passed": true
+    },
+    "task-2": {
+      "task_id": "task-2",
+      "status": "review_failed",
+      "round": 3,
+      "changed_files": [],
+      "merged": false,
+      "worker_success": false,
+      "review_passed": false
+    },
+    "task-3": {
+      "task_id": "task-3",
+      "status": "review_failed",
+      "round": 3,
+      "changed_files": [
+        "domain-tool-core/lib/scip-indexer.js",
+        "domain-tool-core/lib/scip-parser.js",
+        "domain-tool-core/lib/scip-utils.js",
+        "domain-tool-core/lib/symbol-database.js",
+        "domain-tool-core/scip-indexer-cli.js"
+      ],
+      "merged": false,
+      "worker_success": true,
+      "review_passed": false,
+      "last_error": "Could not parse review response"
+    },
+    "task-4": {
+      "task_id": "task-4",
+      "status": "verified",
+      "round": 3,
+      "changed_files": [
+        "domain-tool-core/lib/ts-indexer.js"
+      ],
+      "merged": false,
+      "worker_success": true,
+      "review_passed": true
+    },
+    "task-5": {
+      "task_id": "task-5",
+      "status": "review_failed",
+      "round": 3,
+      "changed_files": [
+        "domain-tool-core/lib/go-indexer.js"
+      ],
+      "merged": false,
+      "worker_success": true,
+      "review_passed": false,
+      "last_error": "Could not parse review response"
+    },
+    "task-6": {
+      "task_id": "task-6",
+      "status": "review_failed",
+      "round": 3,
+      "changed_files": [
+        "tracking/git-diff-tracker.js"
+      ],
+      "merged": false,
+      "worker_success": true,
+      "review_passed": false,
+      "last_error": "Line 196 has a logic error: for 'D' status, change.path is always defined (not oldPath), so the fallback to change.oldPath is unnecessary and slightly confusing"
+    },
+    "task-7": {
+      "task_id": "task-7",
+      "status": "review_failed",
+      "round": 3,
+      "changed_files": [],
+      "merged": false,
+      "worker_success": false,
+      "review_passed": false
+    },
+    "task-8": {
+      "task_id": "task-8",
+      "status": "review_failed",
+      "round": 3,
+      "changed_files": [],
+      "merged": false,
+      "worker_success": false,
+      "review_passed": false
+    },
+    "task-9": {
+      "task_id": "task-9",
+      "status": "verified",
+      "round": 3,
+      "changed_files": [
+        "package-lock.json"
+      ],
+      "merged": false,
+      "worker_success": true,
+      "review_passed": true
+    },
+    "task-10": {
+      "task_id": "task-10",
+      "status": "no_op",
+      "round": 3,
+      "changed_files": [],
+      "merged": false,
+      "worker_success": true,
+      "review_passed": false,
+      "last_error": "No-op task: worker reported success but changed no files."
+    }
+  },
+  "task_verification_results": {
+    "task-1": [],
+    "task-2": [],
+    "task-3": [],
+    "task-4": [],
+    "task-5": [],
+    "task-6": [],
+    "task-7": [],
+    "task-8": [],
+    "task-9": [],
+    "task-10": []
+  },
+  "repair_history": [
+    {
+      "task_id": "task-2",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "worker repair execution failed"
+    },
+    {
+      "task_id": "task-3",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-4",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-5",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-6",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-7",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-8",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-9",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "worker repair execution failed"
+    },
+    {
+      "task_id": "task-10",
+      "round": 2,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-2",
+      "round": 3,
+      "findings_count": 0,
+      "outcome": "failed",
+      "note": "worker repair execution failed"
+    },
+    {
+      "task_id": "task-3",
+      "round": 3,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-4",
+      "round": 3,
+      "findings_count": 1,
+      "outcome": "fixed",
+      "note": "repair review passed"
+    },
+    {
+      "task_id": "task-5",
+      "round": 3,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-6",
+      "round": 3,
+      "findings_count": 10,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-7",
+      "round": 3,
+      "findings_count": 22,
+      "outcome": "failed",
+      "note": "worker repair execution failed"
+    },
+    {
+      "task_id": "task-8",
+      "round": 3,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "worker repair execution failed"
+    },
+    {
+      "task_id": "task-9",
+      "round": 3,
+      "findings_count": 0,
+      "outcome": "fixed",
+      "note": "repair review passed"
+    },
+    {
+      "task_id": "task-10",
+      "round": 3,
+      "findings_count": 1,
+      "outcome": "failed",
+      "note": "repair review still failing"
+    },
+    {
+      "task_id": "task-2",
+      "round": 4,
+      "findings_count": 0,
+      "outcome": "skipped",
+      "note": "retry budget exhausted"
+    },
+    {
+      "task_id": "task-3",
+      "round": 4,
+      "findings_count": 14,
+      "outcome": "skipped",
+      "note": "retry budget exhausted"
+    },
+    {
+      "task_id": "task-5",
+      "round": 4,
+      "findings_count": 10,
+      "outcome": "skipped",
+      "note": "retry budget exhausted"
+    },
+    {
+      "task_id": "task-6",
+      "round": 4,
+      "findings_count": 12,
+      "outcome": "skipped",
+      "note": "retry budget exhausted"
+    },
+    {
+      "task_id": "task-7",
+      "round": 4,
+      "findings_count": 0,
+      "outcome": "skipped",
+      "note": "retry budget exhausted"
+    },
+    {
+      "task_id": "task-8",
+      "round": 4,
+      "findings_count": 0,
+      "outcome": "skipped",
+      "note": "retry budget exhausted"
+    },
+    {
+      "task_id": "task-10",
+      "round": 4,
+      "findings_count": 1,
+      "outcome": "skipped",
+      "note": "retry budget exhausted"
+    }
+  ],
+  "round_cost_history": [
+    {
+      "round": 1,
+      "action": "execute",
+      "cost_estimate": {
+        "opus_tokens": 0,
+        "sonnet_tokens": 0,
+        "haiku_tokens": 0,
+        "domestic_tokens": 188710,
+        "estimated_cost_usd": 0.2498825
+      },
+      "token_breakdown": {
+        "stages": [
+          {
+            "stage": "translator",
+            "model": "kimi-for-coding",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "planner",
+            "model": "kimi-for-coding",
+            "input_tokens": 2973,
+            "output_tokens": 1240
+          },
+          {
+            "stage": "worker:task-1",
+            "model": "glm-5-turbo",
+            "input_tokens": 4694,
+            "output_tokens": 1875
+          },
+          {
+            "stage": "worker:task-2",
+            "model": "kimi-k2.5",
+            "input_tokens": 3267,
+            "output_tokens": 2174
+          },
+          {
+            "stage": "worker:task-3",
+            "model": "kimi-for-coding",
+            "input_tokens": 24625,
+            "output_tokens": 1618
+          },
+          {
+            "stage": "worker:task-4",
+            "model": "glm-5-turbo",
+            "input_tokens": 12109,
+            "output_tokens": 3396
+          },
+          {
+            "stage": "worker:task-5",
+            "model": "glm-5-turbo",
+            "input_tokens": 7891,
+            "output_tokens": 3330
+          },
+          {
+            "stage": "worker:task-6",
+            "model": "glm-5-turbo",
+            "input_tokens": 6859,
+            "output_tokens": 2152
+          },
+          {
+            "stage": "worker:task-7",
+            "model": "kimi-k2.5",
+            "input_tokens": 40619,
+            "output_tokens": 6106
+          },
+          {
+            "stage": "worker:task-8",
+            "model": "kimi-k2.5",
+            "input_tokens": 16277,
+            "output_tokens": 3497
+          },
+          {
+            "stage": "worker:task-9",
+            "model": "kimi-k2.5",
+            "input_tokens": 13855,
+            "output_tokens": 3032
+          },
+          {
+            "stage": "worker:task-10",
+            "model": "kimi-k2.5",
+            "input_tokens": 24225,
+            "output_tokens": 1195
+          },
+          {
+            "stage": "cross-review:task-1",
+            "model": "kimi-for-coding",
+            "input_tokens": 1604,
+            "output_tokens": 97
+          },
+          {
+            "stage": "a2a:task-1",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          }
+        ],
+        "total_input": 158998,
+        "total_output": 29712,
+        "actual_cost_usd": 0.2498825,
+        "claude_equivalent_usd": 0.56613,
+        "savings_usd": 0.3162475
+      },
+      "budget_status": {
+        "monthly_limit_usd": 100,
+        "current_spent_usd": 29.850387499999997,
+        "remaining_usd": 70.1496125,
+        "remaining_ratio": 0.701496125,
+        "warn_at": 0.2,
+        "block": false,
+        "blocked": false,
+        "warning": null
+      }
+    },
+    {
+      "round": 2,
+      "action": "repair_task",
+      "cost_estimate": {
+        "opus_tokens": 0,
+        "sonnet_tokens": 0,
+        "haiku_tokens": 0,
+        "domestic_tokens": 591114,
+        "estimated_cost_usd": 0.7831979166666667
+      },
+      "token_breakdown": {
+        "stages": [
+          {
+            "stage": "worker:task-1",
+            "model": "glm-5-turbo",
+            "input_tokens": 4694,
+            "output_tokens": 1875
+          },
+          {
+            "stage": "worker:task-2",
+            "model": "kimi-k2.5",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "worker:task-3",
+            "model": "kimi-for-coding",
+            "input_tokens": 97055,
+            "output_tokens": 1479
+          },
+          {
+            "stage": "worker:task-4",
+            "model": "glm-5-turbo",
+            "input_tokens": 17242,
+            "output_tokens": 3056
+          },
+          {
+            "stage": "worker:task-5",
+            "model": "glm-5-turbo",
+            "input_tokens": 71109,
+            "output_tokens": 4278
+          },
+          {
+            "stage": "worker:task-6",
+            "model": "glm-5-turbo",
+            "input_tokens": 8125,
+            "output_tokens": 2899
+          },
+          {
+            "stage": "worker:task-7",
+            "model": "kimi-k2.5",
+            "input_tokens": 51599,
+            "output_tokens": 4952
+          },
+          {
+            "stage": "worker:task-8",
+            "model": "kimi-k2.5",
+            "input_tokens": 34120,
+            "output_tokens": 5203
+          },
+          {
+            "stage": "worker:task-9",
+            "model": "kimi-k2.5",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "worker:task-10",
+            "model": "kimi-k2.5",
+            "input_tokens": 255908,
+            "output_tokens": 1588
+          },
+          {
+            "stage": "cross-review:task-1",
+            "model": "kimi-for-coding",
+            "input_tokens": 1604,
+            "output_tokens": 97
+          },
+          {
+            "stage": "a2a:task-1",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "cross-review:task-6",
+            "model": "kimi-for-coding",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "a2a:task-6",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "cross-review:task-7",
+            "model": "glm-5-turbo",
+            "input_tokens": 18844,
+            "output_tokens": 91
+          },
+          {
+            "stage": "a2a:task-7",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "arbitration:task-7",
+            "model": "kimi-for-coding",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "final-review:task-7",
+            "model": "kimi-for-coding",
+            "input_tokens": 5252,
+            "output_tokens": 44
+          }
+        ],
+        "total_input": 565552,
+        "total_output": 25562,
+        "actual_cost_usd": 0.7831979166666667,
+        "claude_equivalent_usd": 1.7733420000000002,
+        "savings_usd": 0.9901440833333335
+      },
+      "budget_status": {
+        "monthly_limit_usd": 100,
+        "current_spent_usd": 31.39591291666666,
+        "remaining_usd": 68.60408708333334,
+        "remaining_ratio": 0.6860408708333334,
+        "warn_at": 0.2,
+        "block": false,
+        "blocked": false,
+        "warning": null
+      }
+    },
+    {
+      "round": 3,
+      "action": "repair_task",
+      "cost_estimate": {
+        "opus_tokens": 0,
+        "sonnet_tokens": 0,
+        "haiku_tokens": 0,
+        "domestic_tokens": 399831,
+        "estimated_cost_usd": 0.34564180555555557
+      },
+      "token_breakdown": {
+        "stages": [
+          {
+            "stage": "worker:task-1",
+            "model": "glm-5-turbo",
+            "input_tokens": 4694,
+            "output_tokens": 1875
+          },
+          {
+            "stage": "worker:task-2",
+            "model": "kimi-k2.5",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "worker:task-3",
+            "model": "kimi-for-coding",
+            "input_tokens": 88346,
+            "output_tokens": 1065
+          },
+          {
+            "stage": "worker:task-4",
+            "model": "glm-5-turbo",
+            "input_tokens": 86276,
+            "output_tokens": 2146
+          },
+          {
+            "stage": "worker:task-5",
+            "model": "glm-5-turbo",
+            "input_tokens": 56596,
+            "output_tokens": 7449
+          },
+          {
+            "stage": "worker:task-6",
+            "model": "glm-5-turbo",
+            "input_tokens": 24630,
+            "output_tokens": 4897
+          },
+          {
+            "stage": "worker:task-7",
+            "model": "kimi-k2.5",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "worker:task-8",
+            "model": "kimi-k2.5",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "worker:task-9",
+            "model": "kimi-k2.5",
+            "input_tokens": 16508,
+            "output_tokens": 3235
+          },
+          {
+            "stage": "worker:task-10",
+            "model": "kimi-k2.5",
+            "input_tokens": 26253,
+            "output_tokens": 2076
+          },
+          {
+            "stage": "cross-review:task-1",
+            "model": "kimi-for-coding",
+            "input_tokens": 1604,
+            "output_tokens": 97
+          },
+          {
+            "stage": "a2a:task-1",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "cross-review:task-3",
+            "model": "glm-5-turbo",
+            "input_tokens": 21173,
+            "output_tokens": 205
+          },
+          {
+            "stage": "a2a:task-3",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "arbitration:task-3",
+            "model": "kimi-for-coding",
+            "input_tokens": 3413,
+            "output_tokens": 46
+          },
+          {
+            "stage": "final-review:task-3",
+            "model": "kimi-for-coding",
+            "input_tokens": 3376,
+            "output_tokens": 46
+          },
+          {
+            "stage": "cross-review:task-4",
+            "model": "kimi-for-coding",
+            "input_tokens": 4165,
+            "output_tokens": 225
+          },
+          {
+            "stage": "a2a:task-4",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "cross-review:task-5",
+            "model": "kimi-for-coding",
+            "input_tokens": 24378,
+            "output_tokens": 92
+          },
+          {
+            "stage": "a2a:task-5",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "cross-review:task-6",
+            "model": "kimi-for-coding",
+            "input_tokens": 14644,
+            "output_tokens": 321
+          },
+          {
+            "stage": "a2a:task-6",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "cross-review:task-9",
+            "model": "glm-5-turbo",
+            "input_tokens": 0,
+            "output_tokens": 0
+          },
+          {
+            "stage": "a2a:task-9",
+            "model": "a2a-lenses",
+            "input_tokens": 0,
+            "output_tokens": 0
+          }
+        ],
+        "total_input": 376056,
+        "total_output": 23775,
+        "actual_cost_usd": 0.34564180555555557,
+        "claude_equivalent_usd": 1.199493,
+        "savings_usd": 0.8538511944444444
+      },
+      "budget_status": {
+        "monthly_limit_usd": 100,
+        "current_spent_usd": 32.65807069444444,
+        "remaining_usd": 67.34192930555557,
+        "remaining_ratio": 0.6734192930555557,
+        "warn_at": 0.2,
+        "block": false,
+        "blocked": false,
+        "warning": null
+      }
+    }
+  ],
+  "policy_hook_results": [],
+  "verification_results": [],
+  "budget_status": {
+    "monthly_limit_usd": 100,
+    "current_spent_usd": 32.65807069444444,
+    "remaining_usd": 67.34192930555557,
+    "remaining_ratio": 0.6734192930555557,
+    "warn_at": 0.2,
+    "block": false,
+    "blocked": false,
+    "warning": null
+  },
+  "budget_warning": null,
+  "next_action": {
+    "kind": "request_human",
+    "reason": "All failed tasks exhausted retry budget. Human intervention needed.",
+    "task_ids": [
+      "task-2",
+      "task-3",
+      "task-5",
+      "task-6",
+      "task-7",
+      "task-8",
+      "task-10"
+    ]
+  },
+  "updated_at": "2026-04-08T02:31:08.771Z",
+  "current_plan_id": "plan-1775610818006",
+  "_smokeResults": {
+    "task-1": true,
+    "task-2": true,
+    "task-3": true,
+    "task-4": true,
+    "task-5": true,
+    "task-6": true,
+    "task-7": true,
+    "task-8": true,
+    "task-9": true,
+    "task-10": true
+  },
+  "final_summary": "3/10 reviews passed; 7 failed; verification passed; no-op tasks: 1; $1.3787 (saved $2.1602 vs Claude)."
+}

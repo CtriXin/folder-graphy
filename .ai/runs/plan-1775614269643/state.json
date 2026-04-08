@@ -1,0 +1,50 @@
+{
+  "run_id": "plan-1775614269643",
+  "status": "partial",
+  "round": 1,
+  "current_plan_id": "plan-1775614269643",
+  "completed_task_ids": [
+    "task-1",
+    "task-2",
+    "task-3",
+    "task-4",
+    "task-5",
+    "task-6",
+    "task-7",
+    "task-8"
+  ],
+  "failed_task_ids": [],
+  "review_failed_task_ids": [
+    "task-2",
+    "task-3",
+    "task-4",
+    "task-5",
+    "task-6",
+    "task-7",
+    "task-8"
+  ],
+  "merged_task_ids": [],
+  "retry_counts": {},
+  "replan_count": 0,
+  "task_states": {},
+  "task_verification_results": {},
+  "repair_history": [],
+  "round_cost_history": [],
+  "policy_hook_results": [],
+  "verification_results": [],
+  "next_action": {
+    "kind": "repair_task",
+    "reason": "Some tasks failed review during MCP execution.",
+    "task_ids": [
+      "task-2",
+      "task-3",
+      "task-4",
+      "task-5",
+      "task-6",
+      "task-7",
+      "task-8"
+    ]
+  },
+  "final_summary": "MCP execution finished with review failures.",
+  "updated_at": "2026-04-08T02:18:15.369Z"
+}

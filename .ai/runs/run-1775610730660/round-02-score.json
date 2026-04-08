@@ -1,0 +1,33 @@
+{
+  "run_id": "run-1775610730660",
+  "round": 2,
+  "action": "repair_task",
+  "status": "partial",
+  "created_at": "2026-04-08T01:56:39.333Z",
+  "score": 55,
+  "summary": "score 55 | workers 8/10 | reviews 1/10 | verification 0/0 | discuss 0 | changed 7 | fragments 4",
+  "signals": {
+    "worker_count": 10,
+    "worker_success_count": 8,
+    "review_count": 10,
+    "review_pass_count": 1,
+    "verification_count": 0,
+    "verification_pass_count": 0,
+    "verification_fail_count": 0,
+    "discuss_triggered_count": 0,
+    "changed_files_count": 7,
+    "prompt_fragment_usage": {
+      "exact_api_signatures": 1,
+      "acceptance_checklist": 1,
+      "strict_file_boundary": 1,
+      "json_structure_sample": 1
+    },
+    "prompt_policy_version_usage": {
+      "worker-policy-v1": 1
+    },
+    "total_duration_ms": 2270119,
+    "total_input_tokens": 539852,
+    "total_output_tokens": 25330
+  },
+  "delta_from_previous": -5
+}

@@ -1,0 +1,8 @@
+{
+  "run_id": "run-1775610730660",
+  "round": 4,
+  "phase": "blocked",
+  "reason": "3/10 reviews passed; 7 failed; verification passed; no-op tasks: 1; $1.3787 (saved $2.1602 vs Claude).",
+  "planner_model": "kimi-for-coding",
+  "updated_at": "2026-04-08T02:31:08.771Z"
+}

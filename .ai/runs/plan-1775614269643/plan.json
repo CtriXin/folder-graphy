@@ -1,0 +1,181 @@
+{
+  "id": "plan-1775614269643",
+  "goal": "构建 MMS 代码知识图谱系统 - 初次可用版本",
+  "cwd": "/Users/xin/auto-skills/CtriXin-repo/folder-graphy",
+  "tasks": [
+    {
+      "id": "task-1",
+      "description": "初始化项目结构和 package.json，配置 TypeScript 和依赖",
+      "complexity": "low",
+      "category": "config",
+      "estimated_files": [
+        "package.json",
+        "tsconfig.json",
+        ".gitignore"
+      ],
+      "acceptance_criteria": [
+        "项目可以 npm install 成功",
+        "TypeScript 编译配置正确"
+      ],
+      "discuss_threshold": 0.5,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for low config task"
+    },
+    {
+      "id": "task-2",
+      "description": "设计 SQLite 数据库 schema：nodes 表（symbol/file）和 edges 表（defines/imports/calls/references）",
+      "complexity": "medium",
+      "category": "schema",
+      "estimated_files": [
+        "src/db/schema.ts",
+        "src/db/migrations/001-init.sql"
+      ],
+      "acceptance_criteria": [
+        "schema 支持 symbol 和 file 节点类型",
+        "schema 支持 defines/imports/calls/references 边类型",
+        "包含位置信息（文件、行、列）"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for medium schema task"
+    },
+    {
+      "id": "task-3",
+      "description": "实现 SCIP 索引解析器，支持 scip-typescript 和 scip-go 输出格式",
+      "complexity": "medium-high",
+      "category": "algorithms",
+      "estimated_files": [
+        "src/scip/parser.ts",
+        "src/scip/types.ts"
+      ],
+      "acceptance_criteria": [
+        "能解析 SCIP protobuf 格式",
+        "提取 symbol、position、relationship 信息"
+      ],
+      "discuss_threshold": 0.7,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-for-coding",
+      "assignment_reason": "Assigned by registry for medium-high algorithms task"
+    },
+    {
+      "id": "task-4",
+      "description": "实现 fg-index CLI 工具：调用 SCIP indexer 并写入 SQLite",
+      "complexity": "medium",
+      "category": "api",
+      "estimated_files": [
+        "src/cli/fg-index.ts",
+        "src/indexer/builder.ts"
+      ],
+      "acceptance_criteria": [
+        "支持 --project 参数指定项目路径",
+        "自动检测项目类型（ts/go）",
+        "调用对应 scip-indexer",
+        "将结果写入 SQLite"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for medium api task"
+    },
+    {
+      "id": "task-5",
+      "description": "实现 fg-query CLI 工具：支持 findDefinition/findReferences/findCallers 查询",
+      "complexity": "medium",
+      "category": "api",
+      "estimated_files": [
+        "src/cli/fg-query.ts",
+        "src/query/engine.ts"
+      ],
+      "acceptance_criteria": [
+        "findDefinition <symbol> 返回定义位置",
+        "findReferences <symbol> 返回所有引用",
+        "findCallers <symbol> 返回调用者列表"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for medium api task"
+    },
+    {
+      "id": "task-6",
+      "description": "实现增量更新机制：基于 git diff 检测变更文件",
+      "complexity": "medium-high",
+      "category": "algorithms",
+      "estimated_files": [
+        "src/indexer/incremental.ts",
+        "src/git/diff.ts"
+      ],
+      "acceptance_criteria": [
+        "检测自上次索引以来的变更文件",
+        "仅重新索引变更文件",
+        "更新数据库中的节点和边"
+      ],
+      "discuss_threshold": 0.7,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-for-coding",
+      "assignment_reason": "Assigned by registry for medium-high algorithms task"
+    },
+    {
+      "id": "task-7",
+      "description": "实现 MindKeeper 整合：session 进入项目时自动触发索引",
+      "complexity": "medium",
+      "category": "api",
+      "estimated_files": [
+        "src/integrations/mindkeeper.ts",
+        "src/hooks/session-start.ts"
+      ],
+      "acceptance_criteria": [
+        "检测到项目根目录时检查索引状态",
+        "索引过期或不存在时自动触发 fg-index",
+        "提供配置项控制自动索引行为"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "glm-5-turbo",
+      "assignment_reason": "Assigned by registry for medium api task"
+    },
+    {
+      "id": "task-8",
+      "description": "在 agent-im 目录构建索引并验证查询功能",
+      "complexity": "medium",
+      "category": "tests",
+      "estimated_files": [
+        "scripts/verify.sh",
+        "test/smoke.test.ts"
+      ],
+      "acceptance_criteria": [
+        "agent-im 目录成功构建索引",
+        "能回答 handleMessage 定义位置",
+        "能回答谁调用了 sendDiscordMessage"
+      ],
+      "discuss_threshold": 0.6,
+      "depends_on": [],
+      "review_scale": "auto",
+      "assigned_model": "kimi-k2.5",
+      "assignment_reason": "Assigned by registry for medium tests task"
+    }
+  ],
+  "execution_order": [
+    [
+      "task-1",
+      "task-2",
+      "task-3",
+      "task-4",
+      "task-5",
+      "task-6",
+      "task-7",
+      "task-8"
+    ]
+  ],
+  "context_flow": {},
+  "created_at": "2026-04-08T02:11:09.643Z"
+}

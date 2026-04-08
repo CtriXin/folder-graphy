@@ -1,0 +1,108 @@
+{
+  "run_id": "run-1775610730660",
+  "goal": "在 /Users/xin/auto-skills/CtriXin-repo/folder-graphy 构建 MMS 代码知识图谱系统（Graphify 替代方案）\n\n**采用方案**：双轨验证（SCIP + 极简 tree-sitter）\n- Track A: SCIP indexers (scip-typescript, scip-go) → SQLite\n- Track B: 极简 tree-sitter 提取 TypeScript defines/imports/calls\n\n**目标**：初次可用（完成 Track A 即可交付基础功能，Track B 后续补充）\n\n**核心需求**：\n1. 能解析 TypeScript 和 Go 代码结构\n2. 提取函数/类/接口定义、import 关系、调用关系\n3. 存储到 SQLite，支持基础查询\n4. 与 MindKeeper thread 机制整合（session 进入项目时自动更新索引）\n5. 提供简单 CLI/API 供 AI 查询\n\n**验收标准**：\n- 在 agent-im 目录能成功构建索引\n- 能回答\"某个函数在哪里定义\"、\"谁调用了这个函数\"等基础查询\n- 增量更新（git diff 感知变更文件）\n\n**P2 规划（暂不执行）**：\n- 语义提取（文档、注释）\n- 可视化界面\n- 更多语言支持\n- 性能优化（大仓库、查询缓存）",
+  "updated_at": "2026-04-08T02:31:08.769Z",
+  "latest_score": 61,
+  "best_score": 61,
+  "rounds": [
+    {
+      "run_id": "run-1775610730660",
+      "round": 1,
+      "action": "execute",
+      "status": "partial",
+      "created_at": "2026-04-08T01:20:05.869Z",
+      "score": 60,
+      "summary": "score 60 | workers 10/10 | reviews 1/10 | verification 0/0 | discuss 0 | changed 4 | fragments 37",
+      "signals": {
+        "worker_count": 10,
+        "worker_success_count": 10,
+        "review_count": 10,
+        "review_pass_count": 1,
+        "verification_count": 0,
+        "verification_pass_count": 0,
+        "verification_fail_count": 0,
+        "discuss_triggered_count": 0,
+        "changed_files_count": 4,
+        "prompt_fragment_usage": {
+          "exact_api_signatures": 8,
+          "acceptance_checklist": 10,
+          "strict_file_boundary": 10,
+          "json_structure_sample": 6,
+          "output_format_guard": 3
+        },
+        "prompt_policy_version_usage": {
+          "worker-policy-v1": 10
+        },
+        "total_duration_ms": 2319545,
+        "total_input_tokens": 154421,
+        "total_output_tokens": 28375
+      }
+    },
+    {
+      "run_id": "run-1775610730660",
+      "round": 2,
+      "action": "repair_task",
+      "status": "partial",
+      "created_at": "2026-04-08T01:56:39.333Z",
+      "score": 55,
+      "summary": "score 55 | workers 8/10 | reviews 1/10 | verification 0/0 | discuss 0 | changed 7 | fragments 4",
+      "signals": {
+        "worker_count": 10,
+        "worker_success_count": 8,
+        "review_count": 10,
+        "review_pass_count": 1,
+        "verification_count": 0,
+        "verification_pass_count": 0,
+        "verification_fail_count": 0,
+        "discuss_triggered_count": 0,
+        "changed_files_count": 7,
+        "prompt_fragment_usage": {
+          "exact_api_signatures": 1,
+          "acceptance_checklist": 1,
+          "strict_file_boundary": 1,
+          "json_structure_sample": 1
+        },
+        "prompt_policy_version_usage": {
+          "worker-policy-v1": 1
+        },
+        "total_duration_ms": 2270119,
+        "total_input_tokens": 539852,
+        "total_output_tokens": 25330
+      },
+      "delta_from_previous": -5
+    },
+    {
+      "run_id": "run-1775610730660",
+      "round": 3,
+      "action": "repair_task",
+      "status": "partial",
+      "created_at": "2026-04-08T02:31:08.769Z",
+      "score": 61,
+      "summary": "score 61 | workers 7/10 | reviews 3/10 | verification 0/0 | discuss 0 | changed 12 | fragments 4",
+      "signals": {
+        "worker_count": 10,
+        "worker_success_count": 7,
+        "review_count": 10,
+        "review_pass_count": 3,
+        "verification_count": 0,
+        "verification_pass_count": 0,
+        "verification_fail_count": 0,
+        "discuss_triggered_count": 0,
+        "changed_files_count": 12,
+        "prompt_fragment_usage": {
+          "exact_api_signatures": 1,
+          "acceptance_checklist": 1,
+          "strict_file_boundary": 1,
+          "json_structure_sample": 1
+        },
+        "prompt_policy_version_usage": {
+          "worker-policy-v1": 1
+        },
+        "total_duration_ms": 2034280,
+        "total_input_tokens": 303303,
+        "total_output_tokens": 22743
+      },
+      "delta_from_previous": 6
+    }
+  ]
+}

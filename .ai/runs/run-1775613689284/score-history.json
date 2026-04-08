@@ -1,0 +1,66 @@
+{
+  "run_id": "run-1775613689284",
+  "goal": "读取并执行 .ai/mcp/latest-goal.md 中的规划",
+  "updated_at": "2026-04-08T02:04:38.158Z",
+  "latest_score": 100,
+  "best_score": 100,
+  "rounds": [
+    {
+      "run_id": "run-1775613689284",
+      "round": 1,
+      "action": "execute",
+      "status": "partial",
+      "created_at": "2026-04-08T02:03:09.771Z",
+      "score": 55,
+      "summary": "score 55 | workers 1/1 | reviews 0/1 | verification 0/0 | discuss 1 | changed 0 | fragments 3",
+      "signals": {
+        "worker_count": 1,
+        "worker_success_count": 1,
+        "review_count": 1,
+        "review_pass_count": 0,
+        "verification_count": 0,
+        "verification_pass_count": 0,
+        "verification_fail_count": 0,
+        "discuss_triggered_count": 1,
+        "changed_files_count": 0,
+        "prompt_fragment_usage": {
+          "strict_file_boundary": 1,
+          "exact_api_signatures": 1,
+          "acceptance_checklist": 1
+        },
+        "prompt_policy_version_usage": {
+          "worker-policy-v1": 1
+        },
+        "total_duration_ms": 43484,
+        "total_input_tokens": 18943,
+        "total_output_tokens": 297
+      }
+    },
+    {
+      "run_id": "run-1775613689284",
+      "round": 2,
+      "action": "repair_task",
+      "status": "done",
+      "created_at": "2026-04-08T02:04:38.158Z",
+      "score": 100,
+      "summary": "score 100 | workers 1/1 | reviews 1/1 | verification 0/0 | discuss 0 | changed 1 | fragments 0",
+      "signals": {
+        "worker_count": 1,
+        "worker_success_count": 1,
+        "review_count": 1,
+        "review_pass_count": 1,
+        "verification_count": 0,
+        "verification_pass_count": 0,
+        "verification_fail_count": 0,
+        "discuss_triggered_count": 0,
+        "changed_files_count": 1,
+        "prompt_fragment_usage": {},
+        "prompt_policy_version_usage": {},
+        "total_duration_ms": 50184,
+        "total_input_tokens": 2997,
+        "total_output_tokens": 1361
+      },
+      "delta_from_previous": 45
+    }
+  ]
+}
