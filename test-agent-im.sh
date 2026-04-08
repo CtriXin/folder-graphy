@@ -70,4 +70,13 @@ echo "$REFS_OUTPUT" | grep -q "main.ts" || { fail "Expected loadConfig reference
 echo "$REFS_OUTPUT" | grep -E "(dist/|node_modules/|\.d\.ts)" && { fail "Noise found in refs query results"; exit 1; } || true
 ok "Reference query returned loadConfig usage (no noise)"
 
+info "Step 5: JSON output test"
+JSON_OUTPUT="$(node "$MAP_FIND_CLI" loadConfig --cwd "$AGENT_IM_PATH" --json)"
+echo "$JSON_OUTPUT" | head -20
+# Verify valid JSON and expected fields
+echo "$JSON_OUTPUT" | jq -e '.[0].file' >/dev/null 2>&1 || { fail "JSON output missing 'file' field"; exit 1; }
+echo "$JSON_OUTPUT" | jq -e '.[0].line' >/dev/null 2>&1 || { fail "JSON output missing 'line' field"; exit 1; }
+echo "$JSON_OUTPUT" | jq -e '.[0].kind' >/dev/null 2>&1 || { fail "JSON output missing 'kind' field"; exit 1; }
+ok "JSON output is valid with expected schema"
+
 info "All map checks passed"
