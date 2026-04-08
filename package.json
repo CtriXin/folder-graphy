@@ -1,33 +1,45 @@
 {
-  "name": "folder-graphy",
+  "name": "@ctrixin/map",
   "version": "0.2.0",
-  "description": "Map skill for local TypeScript and Go projects",
+  "description": "Lightweight code indexing tool for TypeScript/Go projects - optimized for AI Agents",
   "main": "dist/index.js",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CtriXin/folder-graphy.git"
+  },
+  "homepage": "https://github.com/CtriXin/folder-graphy#readme",
+  "bugs": {
+    "url": "https://github.com/CtriXin/folder-graphy/issues"
+  },
   "bin": {
     "map": "./dist/cli/map.js",
     "map-find": "./dist/cli/map-find.js",
     "map-callers": "./dist/cli/map-callers.js",
-    "map-refs": "./dist/cli/map-refs.js",
-    "fg-index": "./dist/cli/map.js",
-    "fg-query": "./dist/cli/map-find.js"
+    "map-refs": "./dist/cli/map-refs.js"
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "bash ./test-agent-im.sh"
+    "test": "bash ./test-agent-im.sh",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "map",
+    "code-index",
     "code-graph",
     "scip",
     "typescript",
-    "go"
+    "go",
+    "ai-agent",
+    "claude-code",
+    "symbol-search",
+    "static-analysis"
   ],
-  "author": "MMS Team",
+  "author": "CtriXin",
   "license": "MIT",
   "dependencies": {
     "better-sqlite3": "^11.0.0",
