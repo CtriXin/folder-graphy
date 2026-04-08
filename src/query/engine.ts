@@ -1,7 +1,14 @@
-import { execSync } from "child_process";
+import { readFileSync } from "fs";
+import { join, resolve } from "path";
 import Database from "better-sqlite3";
-import { join } from "path";
-import { existsSync } from "fs";
+import {
+  ProjectType,
+  collectSourceFiles,
+  detectProjectType,
+  findProjectRoot,
+  resolveMapLayout,
+  toProjectRelative,
+} from "../project.js";
 
 export interface QueryResult {
   file: string;
@@ -13,126 +20,162 @@ export interface QueryResult {
 
 export interface QueryOptions {
   cwd?: string;
-  dbPath?: string;
+  projectPath?: string;
+  limit?: number;
 }
 
-function findDbPath(cwd: string): string | null {
-  const name = cwd.split("/").pop() || "project";
-  const candidates = [
-    join(cwd, `${name}.fg-index.db`),
-    join(cwd, ".ai", "mindkeeper", "index.db"),
-    join(cwd, "index.db"),
-  ];
-  for (const p of candidates) {
-    if (existsSync(p)) return p;
+function escapeRegex(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function resolveProjectPath(options: QueryOptions = {}): string {
+  const start = options.projectPath ?? options.cwd ?? process.cwd();
+  return findProjectRoot(start) ?? resolve(start);
+}
+
+function detectTypeOrThrow(projectPath: string): ProjectType {
+  const projectType = detectProjectType(projectPath);
+  if (!projectType) {
+    throw new Error(`Unable to detect project type for ${projectPath}`);
   }
-  return null;
+  return projectType;
 }
 
-function rgAvailable(): boolean {
+function maxResults(options: QueryOptions): number {
+  return options.limit ?? 50;
+}
+
+function loadDefinitions(projectPath: string, symbol: string, limit: number): QueryResult[] {
+  const { dbPath } = resolveMapLayout(projectPath);
+  const db = new Database(dbPath, { readonly: true });
   try {
-    execSync("rg --version", { stdio: "pipe" });
-    return true;
-  } catch {
-    return false;
+    const rows = db
+      .prepare(
+        `SELECT symbol, kind, file_path, line, column, text
+         FROM definitions
+         WHERE symbol = ? COLLATE NOCASE
+            OR symbol LIKE ? COLLATE NOCASE
+         ORDER BY CASE WHEN lower(symbol) = lower(?) THEN 0 ELSE 1 END, symbol, file_path, line
+         LIMIT ?`
+      )
+      .all(symbol, `${symbol}%`, symbol, limit) as Array<{
+        symbol: string;
+        kind: string;
+        file_path: string;
+        line: number;
+        column: number;
+        text: string;
+      }>;
+
+    return rows.map((row) => ({
+      file: row.file_path,
+      line: row.line,
+      column: row.column,
+      text: row.text,
+      kind: "definition",
+    }));
+  } finally {
+    db.close();
   }
 }
 
-function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function definitionRegexes(projectType: ProjectType, symbol: string): RegExp[] {
+  const escaped = escapeRegex(symbol);
+  if (projectType === "typescript") {
+    return [
+      new RegExp(`^\\s*export\\s+(?:default\\s+)?(?:async\\s+)?function\\s+${escaped}\\s*\\(`),
+      new RegExp(`^\\s*(?:async\\s+)?function\\s+${escaped}\\s*\\(`),
+      new RegExp(`^\\s*export\\s+(?:default\\s+)?class\\s+${escaped}\\b`),
+      new RegExp(`^\\s*class\\s+${escaped}\\b`),
+      new RegExp(`^\\s*export\\s+interface\\s+${escaped}\\b`),
+      new RegExp(`^\\s*interface\\s+${escaped}\\b`),
+      new RegExp(`^\\s*(?:public|private|protected)\\s+(?:static\\s+)?(?:async\\s+)?${escaped}\\s*\\(`),
+      new RegExp(`^\\s*static\\s+(?:async\\s+)?${escaped}\\s*\\(`),
+      new RegExp(`^\\s*export\\s+type\\s+${escaped}\\s*=`),
+      new RegExp(`^\\s*type\\s+${escaped}\\s*=`),
+      new RegExp(`^\\s*export\\s+enum\\s+${escaped}\\b`),
+      new RegExp(`^\\s*enum\\s+${escaped}\\b`),
+      new RegExp(`^\\s*export\\s+(?:const|let|var)\\s+${escaped}\\s*=`),
+      new RegExp(`^\\s*(?:const|let|var)\\s+${escaped}\\s*=`),
+    ];
+  }
+
+  return [
+    new RegExp(`^\\s*func\\s+(?:\\([^)]+\\)\\s*)?${escaped}\\s*\\(`),
+    new RegExp(`^\\s*type\\s+${escaped}\\b`),
+    new RegExp(`^\\s*var\\s+${escaped}\\b`),
+    new RegExp(`^\\s*const\\s+${escaped}\\b`),
+  ];
 }
 
-export function findDefinition(symbol: string, options: QueryOptions = {}): QueryResult[] {
-  const cwd = options.cwd || process.cwd();
-  const dbPath = options.dbPath || findDbPath(cwd);
+function scanFiles(projectPath: string, projectType: ProjectType, matcher: (line: string) => boolean, kind: QueryResult["kind"], options: QueryOptions, symbol: string): QueryResult[] {
+  const files = collectSourceFiles(projectPath, projectType);
+  const results: QueryResult[] = [];
+  const defs = definitionRegexes(projectType, symbol);
+  const limit = maxResults(options);
 
-  if (dbPath) {
-    try {
-      const db = new Database(dbPath);
-      const stmt = db.prepare(
-        `SELECT s.name, s.definition, s.kind
-         FROM symbols s
-         WHERE s.name LIKE ? AND s.definition IS NOT NULL`
-      );
-      const rows = stmt.all(`%${symbol}%`) as Array<{ name: string; definition: string; kind: string }>;
-      db.close();
+  for (const filePath of files) {
+    if (results.length >= limit) {
+      break;
+    }
 
-      const results: QueryResult[] = [];
-      for (const r of rows) {
-        const parts = r.definition?.split(":");
-        if (!parts || parts.length < 2) continue;
-        results.push({
-          file: parts[0],
-          line: parseInt(parts[1], 10) || 0,
-          column: 0,
-          text: `${r.kind}: ${r.name}`,
-          kind: "definition",
-        });
+    const content = readFileSync(filePath, "utf-8");
+    const lines = content.split(/\r?\n/);
+
+    for (let index = 0; index < lines.length; index++) {
+      if (results.length >= limit) {
+        break;
       }
-      return results;
-    } catch {
-      // Fall through to grep
+
+      const line = lines[index];
+      if (!matcher(line)) {
+        continue;
+      }
+
+      if (kind !== "definition" && defs.some((regex) => regex.test(line))) {
+        continue;
+      }
+
+      const column = Math.max(line.search(/\S|$/), 0) + 1;
+      results.push({
+        file: toProjectRelative(projectPath, filePath),
+        line: index + 1,
+        column,
+        text: line.trim(),
+        kind,
+      });
     }
   }
 
-  // Fallback: grep-based search
-  const pattern = `\\b${escapeRegex(symbol)}\\b`;
-  const cmd = rgAvailable()
-    ? `rg -n --type ts "^(export\\s+)?(async\\s+)?(function|const|let|class|interface)\\s+${escapeRegex(symbol)}"`
-    : `grep -rn "^(export\\s\+\)\?\(async\\s\+\)\?\(function\\|const\\|let\\|class\\|interface\)\\s\+${escapeRegex(symbol)}" --include="*.ts"`;
+  return results;
+}
 
-  try {
-    const output = execSync(cmd, { cwd, encoding: "utf-8", maxBuffer: 10 * 1024 * 1024 });
-    return parseGrepOutput(output).map((r) => ({ ...r, kind: "definition" as const }));
-  } catch {
-    return [];
-  }
+export function findDefinition(symbol: string, options: QueryOptions = {}): QueryResult[] {
+  const projectPath = resolveProjectPath(options);
+  const limit = maxResults(options);
+  return loadDefinitions(projectPath, symbol, limit);
 }
 
 export function findReferences(symbol: string, options: QueryOptions = {}): QueryResult[] {
-  const cwd = options.cwd || process.cwd();
-  const pattern = `\\b${escapeRegex(symbol)}\\b`;
-
-  const cmd = rgAvailable()
-    ? `rg -n --type ts ${JSON.stringify(pattern)}`
-    : `grep -rn ${JSON.stringify(pattern)} --include="*.ts"`;
-
-  try {
-    const output = execSync(cmd, { cwd, encoding: "utf-8", maxBuffer: 10 * 1024 * 1024 });
-    return parseGrepOutput(output).map((r) => ({ ...r, kind: "reference" as const }));
-  } catch {
-    return [];
-  }
+  const projectPath = resolveProjectPath(options);
+  const projectType = detectTypeOrThrow(projectPath);
+  const regex = new RegExp(`\\b${escapeRegex(symbol)}\\b`);
+  return scanFiles(projectPath, projectType, (line) => regex.test(line), "reference", options, symbol);
 }
 
 export function findCallers(symbol: string, options: QueryOptions = {}): QueryResult[] {
-  const cwd = options.cwd || process.cwd();
-  const pattern = `${escapeRegex(symbol)}\\s*\\(`;
-
-  const cmd = rgAvailable()
-    ? `rg -n --type ts ${JSON.stringify(pattern)}`
-    : `grep -rn ${JSON.stringify(pattern)} --include="*.ts"`;
-
-  try {
-    const output = execSync(cmd, { cwd, encoding: "utf-8", maxBuffer: 10 * 1024 * 1024 });
-    return parseGrepOutput(output).map((r) => ({ ...r, kind: "call" as const }));
-  } catch {
-    return [];
-  }
+  const projectPath = resolveProjectPath(options);
+  const projectType = detectTypeOrThrow(projectPath);
+  const regex = new RegExp(`(?:\\b|\\.|->|::)${escapeRegex(symbol)}\\s*\\(`);
+  return scanFiles(projectPath, projectType, (line) => regex.test(line), "call", options, symbol);
 }
 
-function parseGrepOutput(output: string): Array<{ file: string; line: number; column: number; text: string }> {
-  if (!output.trim()) return [];
-  const results: Array<{ file: string; line: number; column: number; text: string }> = [];
-  for (const line of output.trim().split("\n")) {
-    const match = line.match(/^([^:]+):(\d+):(.*)$/);
-    if (!match) continue;
-    results.push({
-      file: match[1],
-      line: parseInt(match[2], 10),
-      column: 0,
-      text: match[3].trim(),
-    });
-  }
-  return results;
+export function formatResult(result: QueryResult): string {
+  const kindTag = result.kind === "definition" ? "[DEF]" : result.kind === "call" ? "[CALL]" : "[REF]";
+  return `${kindTag} ${result.file}:${result.line}:${result.column}  ${result.text}`;
+}
+
+export function mapPaths(projectPath: string): { scipPath: string; dbPath: string } {
+  const layout = resolveMapLayout(projectPath);
+  return { scipPath: join(layout.dir, "index.scip"), dbPath: join(layout.dir, "map.db") };
 }

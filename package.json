@@ -1,27 +1,31 @@
 {
   "name": "folder-graphy",
-  "version": "0.1.0",
-  "description": "MMS 代码知识图谱系统 - Graphify 替代方案",
+  "version": "0.2.0",
+  "description": "Map skill for local TypeScript and Go projects",
   "main": "dist/index.js",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
   "bin": {
-    "fg-index": "./dist/cli/fg-index.js",
-    "fg-query": "./dist/cli/fg-query.js"
+    "map": "./dist/cli/map.js",
+    "map-find": "./dist/cli/map-find.js",
+    "map-callers": "./dist/cli/map-callers.js",
+    "map-refs": "./dist/cli/map-refs.js",
+    "fg-index": "./dist/cli/map.js",
+    "fg-query": "./dist/cli/map-find.js"
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "bash ./test-agent-im.sh"
   },
   "keywords": [
+    "map",
     "code-graph",
-    "knowledge-graph",
     "scip",
     "typescript",
-    "static-analysis"
+    "go"
   ],
   "author": "MMS Team",
   "license": "MIT",

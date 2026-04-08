@@ -1,200 +1,193 @@
-import { existsSync, readFileSync } from "fs";
-import { join, basename } from "path";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import Database from "better-sqlite3";
+import { initSchema } from "../db/schema.js";
+import {
+  ProjectType,
+  collectSourceFiles,
+  detectProjectType,
+  ensureMapLayout,
+  toProjectRelative,
+  ProjectManifest,
+} from "../project.js";
 
 const execFileAsync = promisify(execFile);
 
-export type ProjectType = "typescript" | "go";
+interface DefinitionRecord {
+  symbol: string;
+  kind: string;
+  filePath: string;
+  line: number;
+  column: number;
+  text: string;
+  language: string;
+}
 
 export interface IndexResult {
   success: boolean;
+  projectType?: ProjectType;
+  projectPath?: string;
+  scipPath?: string;
   dbPath?: string;
-  documentCount?: number;
-  symbolCount?: number;
+  definitionCount?: number;
+  sourceFileCount?: number;
   error?: string;
 }
 
-export function detectProjectType(projectPath: string): ProjectType | null {
-  if (existsSync(join(projectPath, "tsconfig.json"))) {
-    return "typescript";
-  }
-  if (existsSync(join(projectPath, "go.mod"))) {
-    return "go";
-  }
-  return null;
-}
-
-function indexerCommand(
-  projectType: ProjectType
-): { cmd: string; args: string[] } | null {
-  switch (projectType) {
-    case "typescript":
-      return { cmd: "scip-typescript", args: ["index", "--output", "index.json"] };
-    case "go":
-      return { cmd: "scip-go", args: ["index", "--output", "index.json"] };
-    default:
-      return null;
-  }
-}
-
-function createSchema(db: Database.Database): void {
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS documents (
-      id    INTEGER PRIMARY KEY AUTOINCREMENT,
-      path  TEXT    NOT NULL,
-      hash  TEXT
-    );
-    CREATE TABLE IF NOT EXISTS symbols (
-      id            INTEGER PRIMARY KEY AUTOINCREMENT,
-      name          TEXT    NOT NULL,
-      kind          TEXT    NOT NULL,
-      definition    TEXT,
-      document_id   INTEGER REFERENCES documents(id) ON DELETE CASCADE
-    );
-    CREATE INDEX IF NOT EXISTS idx_symbols_name ON symbols(name);
-    CREATE INDEX IF NOT EXISTS idx_symbols_document ON symbols(document_id);
-  `);
-}
-
-interface ScipSymbol {
-  name: string;
+interface DefinitionPattern {
   kind: string;
-  definition?: string;
-  documentPath?: string;
+  regex: RegExp;
 }
 
-function parseScipOutput(scipPath: string): ScipSymbol[] {
-  if (!existsSync(scipPath)) return [];
+const TYPESCRIPT_PATTERNS: DefinitionPattern[] = [
+  { kind: "function", regex: /^\s*export\s+(?:default\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/ },
+  { kind: "function", regex: /^\s*(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/ },
+  { kind: "class", regex: /^\s*export\s+(?:default\s+)?class\s+([A-Za-z_$][\w$]*)\b/ },
+  { kind: "class", regex: /^\s*class\s+([A-Za-z_$][\w$]*)\b/ },
+  { kind: "interface", regex: /^\s*export\s+interface\s+([A-Za-z_$][\w$]*)\b/ },
+  { kind: "interface", regex: /^\s*interface\s+([A-Za-z_$][\w$]*)\b/ },
+  { kind: "method", regex: /^\s*(?:public|private|protected)\s+(?:static\s+)?(?:async\s+)?([A-Za-z_$][\w$]*)\s*\(/ },
+  { kind: "method", regex: /^\s*static\s+(?:async\s+)?([A-Za-z_$][\w$]*)\s*\(/ },
+  { kind: "type", regex: /^\s*export\s+type\s+([A-Za-z_$][\w$]*)\s*=/ },
+  { kind: "type", regex: /^\s*type\s+([A-Za-z_$][\w$]*)\s*=/ },
+  { kind: "enum", regex: /^\s*export\s+enum\s+([A-Za-z_$][\w$]*)\b/ },
+  { kind: "enum", regex: /^\s*enum\s+([A-Za-z_$][\w$]*)\b/ },
+  { kind: "const", regex: /^\s*export\s+(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/ },
+  { kind: "const", regex: /^\s*(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=/ },
+];
 
-  const raw = readFileSync(scipPath, "utf-8");
-  try {
-    const doc = JSON.parse(raw);
-    return extractSymbols(doc);
-  } catch {
-    console.error("Warning: could not parse SCIP output");
-    return [];
+const GO_PATTERNS: DefinitionPattern[] = [
+  { kind: "function", regex: /^\s*func\s+(?:\([^)]+\)\s*)?([A-Za-z_][A-Za-z0-9_]*)\s*\(/ },
+  { kind: "type", regex: /^\s*type\s+([A-Za-z_][A-Za-z0-9_]*)\b/ },
+  { kind: "var", regex: /^\s*var\s+([A-Za-z_][A-Za-z0-9_]*)\b/ },
+  { kind: "const", regex: /^\s*const\s+([A-Za-z_][A-Za-z0-9_]*)\b/ },
+];
+
+function indexerCommand(projectType: ProjectType, scipPath: string): { cmd: string; args: string[] } {
+  if (projectType === "typescript") {
+    return { cmd: "scip-typescript", args: ["index", "--output", scipPath] };
   }
+  return { cmd: "scip-go", args: ["index", "--output", scipPath] };
 }
 
-function extractSymbols(doc: Record<string, unknown>): ScipSymbol[] {
-  const symbols: ScipSymbol[] = [];
-  const externalSymbols: Record<string, unknown> =
-    (doc.external_symbols as Record<string, unknown>) ?? {};
-  const internalSymbols: Record<string, unknown> =
-    (doc.internal_symbols as Record<string, unknown>) ?? {};
-  const documents: Record<string, unknown> =
-    (doc.documents as Record<string, unknown>) ?? {};
+function extractDefinitions(projectPath: string, projectType: ProjectType): DefinitionRecord[] {
+  const files = collectSourceFiles(projectPath, projectType);
+  const patterns = projectType === "typescript" ? TYPESCRIPT_PATTERNS : GO_PATTERNS;
+  const language = projectType === "typescript" ? "typescript" : "go";
+  const definitions: DefinitionRecord[] = [];
 
-  const allSymbols = { ...externalSymbols, ...internalSymbols };
-  const pathByDocId: Record<string, string> = {};
+  for (const filePath of files) {
+    const relativePath = toProjectRelative(projectPath, filePath);
+    const content = readFileSync(filePath, "utf-8");
+    const lines = content.split(/\r?\n/);
 
-  for (const [docId, docData] of Object.entries(documents)) {
-    const relativePath = (docData as Record<string, unknown>).relative_path as
-      | string
-      | undefined;
-    if (relativePath) pathByDocId[docId] = relativePath;
-  }
-
-  for (const [symbolKey, symData] of Object.entries(allSymbols)) {
-    const sym = symData as Record<string, unknown>;
-    const relationships = sym.relationships as Record<string, unknown> | undefined;
-    const defRef = relationships?.definition_reference as
-      | Record<string, unknown>
-      | undefined;
-    const docRef = defRef?.document as string | undefined;
-
-    symbols.push({
-      name: symbolKey,
-      kind: (sym.kind as string) ?? "unknown",
-      definition: defRef
-        ? `${pathByDocId[docRef ?? ""] ?? docRef}:${defRef.start_line ?? 0}`
-        : undefined,
-      documentPath: docRef ? pathByDocId[docRef] : undefined,
+    lines.forEach((lineText, index) => {
+      for (const pattern of patterns) {
+        const match = pattern.regex.exec(lineText);
+        if (!match) {
+          continue;
+        }
+        const symbol = match[1];
+        const column = Math.max(lineText.indexOf(symbol), 0) + 1;
+        definitions.push({
+          symbol,
+          kind: pattern.kind,
+          filePath: relativePath,
+          line: index + 1,
+          column,
+          text: lineText.trim(),
+          language,
+        });
+        break;
+      }
     });
   }
 
-  return symbols;
+  return definitions;
 }
 
-export async function buildIndex(
-  projectPath: string,
-  projectType: ProjectType
-): Promise<IndexResult> {
-  const spec = indexerCommand(projectType);
-  if (!spec) {
-    return { success: false, error: `unsupported project type: ${projectType}` };
+function writeSQLite(dbPath: string, definitions: DefinitionRecord[], projectPath: string, projectType: ProjectType, scipPath: string): void {
+  if (existsSync(dbPath)) {
+    rmSync(dbPath, { force: true });
   }
 
+  const db = new Database(dbPath);
   try {
-    await execFileAsync(spec.cmd, spec.args, { cwd: projectPath });
+    initSchema(db);
+
+    const insertMeta = db.prepare("INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)");
+    const insertDefinition = db.prepare(
+      `INSERT INTO definitions (symbol, kind, file_path, line, column, text, language)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    );
+
+    const tx = db.transaction(() => {
+      insertMeta.run("project_path", projectPath);
+      insertMeta.run("project_type", projectType);
+      insertMeta.run("scip_path", scipPath);
+      insertMeta.run("indexed_at", new Date().toISOString());
+
+      for (const definition of definitions) {
+        insertDefinition.run(
+          definition.symbol,
+          definition.kind,
+          definition.filePath,
+          definition.line,
+          definition.column,
+          definition.text,
+          definition.language
+        );
+      }
+    });
+
+    tx();
+  } finally {
+    db.close();
+  }
+}
+
+export async function buildIndex(projectPath: string, projectType?: ProjectType): Promise<IndexResult> {
+  const detectedType = projectType ?? detectProjectType(projectPath);
+  if (!detectedType) {
+    return { success: false, error: `unsupported project type: ${projectPath}` };
+  }
+
+  const layout = ensureMapLayout(projectPath);
+  const spec = indexerCommand(detectedType, layout.scipPath);
+
+  try {
+    await execFileAsync(spec.cmd, spec.args, { cwd: projectPath, timeout: 300_000 });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return { success: false, error: `indexer failed: ${msg}` };
   }
 
-  const scipPath = join(projectPath, "index.json");
-  if (!existsSync(scipPath)) {
-    return {
-      success: false,
-      error: `indexer produced no output at ${scipPath}`,
-    };
+  if (!existsSync(layout.scipPath)) {
+    return { success: false, error: `indexer produced no output at ${layout.scipPath}` };
   }
 
-  const symbols = parseScipOutput(scipPath);
-  const dbPath = join(projectPath, `${basename(projectPath)}.fg-index.db`);
+  const definitions = extractDefinitions(projectPath, detectedType);
+  writeSQLite(layout.dbPath, definitions, projectPath, detectedType, layout.scipPath);
 
-  const db = new Database(dbPath);
-  try {
-    createSchema(db);
+  const manifest: ProjectManifest = {
+    projectPath,
+    projectType: detectedType,
+    indexedAt: new Date().toISOString(),
+    scipPath: layout.scipPath,
+    dbPath: layout.dbPath,
+    definitionCount: definitions.length,
+    sourceFileCount: collectSourceFiles(projectPath, detectedType).length,
+  };
+  writeFileSync(layout.manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
 
-    const insertDoc = db.prepare(
-      "INSERT INTO documents (path) VALUES (?) ON CONFLICT DO NOTHING"
-    );
-    const getDocId = db.prepare(
-      "SELECT id FROM documents WHERE path = ?"
-    );
-    const insertSym = db.prepare(
-      "INSERT INTO symbols (name, kind, definition, document_id) VALUES (?, ?, ?, ?)"
-    );
-
-    const tx = db.transaction(() => {
-      const docPaths = new Set<string>();
-      let symCount = 0;
-
-      for (const sym of symbols) {
-        if (sym.documentPath) docPaths.add(sym.documentPath);
-      }
-
-      for (const p of docPaths) {
-        insertDoc.run(p);
-      }
-
-      for (const sym of symbols) {
-        const docId = sym.documentPath
-          ? (getDocId.get(sym.documentPath) as { id: number } | undefined)
-              ?.id ?? null
-          : null;
-        insertSym.run(sym.name, sym.kind, sym.definition ?? null, docId);
-        symCount++;
-      }
-
-      return { documentCount: docPaths.size, symbolCount: symCount };
-    });
-
-    const counts = tx();
-    db.close();
-
-    return {
-      success: true,
-      dbPath,
-      documentCount: counts.documentCount,
-      symbolCount: counts.symbolCount,
-    };
-  } catch (err) {
-    db.close();
-    const msg = err instanceof Error ? err.message : String(err);
-    return { success: false, error: `sqlite write failed: ${msg}` };
-  }
+  return {
+    success: true,
+    projectType: detectedType,
+    projectPath,
+    scipPath: layout.scipPath,
+    dbPath: layout.dbPath,
+    definitionCount: definitions.length,
+    sourceFileCount: manifest.sourceFileCount,
+  };
 }

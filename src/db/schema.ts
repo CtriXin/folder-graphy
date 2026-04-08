@@ -1,72 +1,39 @@
-export type NodeType = "symbol" | "file";
-
-export type EdgeKind = "defines" | "imports" | "calls" | "references";
-
-export interface NodeRow {
+export interface DefinitionRow {
   id: number;
-  type: NodeType;
-  name: string;
+  symbol: string;
+  kind: string;
   file_path: string;
-  line: number | null;
-  column: number | null;
-  detail: string | null;
-  created_at: string;
-}
-
-export interface EdgeRow {
-  id: number;
-  kind: EdgeKind;
-  source_id: number;
-  target_id: number;
-  file_path: string;
-  line: number | null;
-  column: number | null;
-  created_at: string;
+  line: number;
+  column: number;
+  text: string;
+  language: string;
 }
 
 export function initSchema(db: import("better-sqlite3").Database): void {
   db.exec(`
-    CREATE TABLE IF NOT EXISTS nodes (
-      id        INTEGER PRIMARY KEY AUTOINCREMENT,
-      type      TEXT    NOT NULL CHECK(type IN ('symbol', 'file')),
-      name      TEXT    NOT NULL,
-      file_path TEXT    NOT NULL,
-      line      INTEGER,
-      column    INTEGER,
-      detail    TEXT,
-      created_at TEXT   NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+    CREATE TABLE IF NOT EXISTS meta (
+      key   TEXT PRIMARY KEY,
+      value TEXT NOT NULL
     );
 
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_nodes_unique
-      ON nodes(type, name, file_path);
-
-    CREATE INDEX IF NOT EXISTS idx_nodes_file
-      ON nodes(file_path);
-
-    CREATE INDEX IF NOT EXISTS idx_nodes_type
-      ON nodes(type);
-
-    CREATE TABLE IF NOT EXISTS edges (
+    CREATE TABLE IF NOT EXISTS definitions (
       id        INTEGER PRIMARY KEY AUTOINCREMENT,
-      kind      TEXT    NOT NULL CHECK(kind IN ('defines', 'imports', 'calls', 'references')),
-      source_id INTEGER NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
-      target_id INTEGER NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
-      file_path TEXT    NOT NULL,
-      line      INTEGER,
-      column    INTEGER,
-      created_at TEXT   NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+      symbol    TEXT NOT NULL,
+      kind      TEXT NOT NULL,
+      file_path TEXT NOT NULL,
+      line      INTEGER NOT NULL,
+      column    INTEGER NOT NULL,
+      text      TEXT NOT NULL,
+      language  TEXT NOT NULL
     );
 
-    CREATE INDEX IF NOT EXISTS idx_edges_source
-      ON edges(source_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_definitions_unique
+      ON definitions(symbol, file_path, line, kind);
 
-    CREATE INDEX IF NOT EXISTS idx_edges_target
-      ON edges(target_id);
+    CREATE INDEX IF NOT EXISTS idx_definitions_symbol
+      ON definitions(symbol);
 
-    CREATE INDEX IF NOT EXISTS idx_edges_kind
-      ON edges(kind);
-
-    CREATE INDEX IF NOT EXISTS idx_edges_file
-      ON edges(file_path);
+    CREATE INDEX IF NOT EXISTS idx_definitions_file
+      ON definitions(file_path);
   `);
 }
