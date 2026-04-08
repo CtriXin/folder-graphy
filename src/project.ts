@@ -3,6 +3,42 @@ import { join, relative, resolve } from "path";
 
 export type ProjectType = "typescript" | "go";
 
+export interface FileContext {
+  path: string;
+  ext: string;
+  projectType: ProjectType;
+  mtimeMs?: number;
+  size?: number;
+}
+
+export type FileFilter = (ctx: FileContext) => boolean;
+
+function isInDir(filePath: string, dirName: string): boolean {
+  // Check if filePath contains /{dirName}/ or ends with /{dirName}
+  const normalized = filePath.replace(/\\/g, '/');
+  return normalized.includes(`/${dirName}/`) || normalized.endsWith(`/${dirName}`);
+}
+
+export const defaultFileFilter: FileFilter = (ctx) => {
+  const p = ctx.path.replace(/\\/g, '/');
+
+  // Directory-based filtering (path segment boundary)
+  if (isInDir(p, 'node_modules')) return false;
+  if (isInDir(p, 'dist')) return false;
+  if (isInDir(p, 'build')) return false;
+  if (isInDir(p, '.git')) return false;
+  if (isInDir(p, '.ai')) return false;  // .ai/map is handled here
+  if (isInDir(p, 'coverage')) return false;
+  if (isInDir(p, 'vendor')) return false;
+
+  // File extension/pattern based filtering
+  if (p.endsWith('.d.ts')) return false;
+  if (p.endsWith('.map')) return false;
+  if (p.endsWith('.min.js')) return false;
+
+  return true;
+};
+
 export interface MapLayout {
   dir: string;
   scipPath: string;
@@ -18,6 +54,7 @@ export interface ProjectManifest {
   dbPath: string;
   definitionCount: number;
   sourceFileCount: number;
+  files?: Array<{ path: string; mtimeMs: number; size: number }>;
 }
 
 const IGNORED_DIRS = new Set([
@@ -90,14 +127,22 @@ function fileExtension(filePath: string): string {
   return lastDot === -1 ? "" : filePath.slice(lastDot);
 }
 
-function shouldIncludeFile(projectType: ProjectType, filePath: string): boolean {
+function shouldIncludeFile(projectType: ProjectType, filePath: string, filter: FileFilter = defaultFileFilter): boolean {
   const ext = fileExtension(filePath).toLowerCase();
-  return projectType === "typescript"
+  const isSourceFile = projectType === "typescript"
     ? TYPE_SCRIPT_EXTENSIONS.has(ext)
     : GO_EXTENSIONS.has(ext);
+  if (!isSourceFile) return false;
+
+  const ctx: FileContext = { path: filePath, ext, projectType };
+  return filter(ctx);
 }
 
-export function collectSourceFiles(projectPath: string, projectType: ProjectType): string[] {
+export function collectSourceFiles(
+  projectPath: string,
+  projectType: ProjectType,
+  filter: FileFilter = defaultFileFilter,
+): string[] {
   const files: string[] = [];
   const stack = [projectPath];
 
@@ -125,7 +170,7 @@ export function collectSourceFiles(projectPath: string, projectType: ProjectType
         continue;
       }
 
-      if (entry.isFile() && shouldIncludeFile(projectType, absolutePath)) {
+      if (entry.isFile() && shouldIncludeFile(projectType, absolutePath, filter)) {
         files.push(absolutePath);
       }
     }

@@ -4,10 +4,12 @@ import Database from "better-sqlite3";
 import {
   ProjectType,
   collectSourceFiles,
+  defaultFileFilter,
   detectProjectType,
   findProjectRoot,
   resolveMapLayout,
   toProjectRelative,
+  type FileFilter,
 } from "../project.js";
 
 export interface QueryResult {
@@ -108,8 +110,16 @@ function definitionRegexes(projectType: ProjectType, symbol: string): RegExp[] {
   ];
 }
 
-function scanFiles(projectPath: string, projectType: ProjectType, matcher: (line: string) => boolean, kind: QueryResult["kind"], options: QueryOptions, symbol: string): QueryResult[] {
-  const files = collectSourceFiles(projectPath, projectType);
+function scanFiles(
+  projectPath: string,
+  projectType: ProjectType,
+  matcher: (line: string) => boolean,
+  kind: QueryResult["kind"],
+  options: QueryOptions,
+  symbol: string,
+  filter: FileFilter = defaultFileFilter,
+): QueryResult[] {
+  const files = collectSourceFiles(projectPath, projectType, filter);
   const results: QueryResult[] = [];
   const defs = definitionRegexes(projectType, symbol);
   const limit = maxResults(options);

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, rmSync, statSync, writeFileSync } from "fs";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import Database from "better-sqlite3";
@@ -6,10 +6,12 @@ import { initSchema } from "../db/schema.js";
 import {
   ProjectType,
   collectSourceFiles,
+  defaultFileFilter,
   detectProjectType,
   ensureMapLayout,
   toProjectRelative,
-  ProjectManifest,
+  type FileFilter,
+  type ProjectManifest,
 } from "../project.js";
 
 const execFileAsync = promisify(execFile);
@@ -32,6 +34,7 @@ export interface IndexResult {
   dbPath?: string;
   definitionCount?: number;
   sourceFileCount?: number;
+  files?: Array<{ path: string; mtimeMs: number; size: number }>;
   error?: string;
 }
 
@@ -71,15 +74,32 @@ function indexerCommand(projectType: ProjectType, scipPath: string): { cmd: stri
   return { cmd: "scip-go", args: ["index", "--output", scipPath] };
 }
 
-function extractDefinitions(projectPath: string, projectType: ProjectType): DefinitionRecord[] {
-  const files = collectSourceFiles(projectPath, projectType);
+interface FileMeta {
+  path: string;
+  mtimeMs: number;
+  size: number;
+}
+
+function extractDefinitions(
+  projectPath: string,
+  projectType: ProjectType,
+  filter: FileFilter = defaultFileFilter,
+): { definitions: DefinitionRecord[]; files: FileMeta[] } {
+  const files = collectSourceFiles(projectPath, projectType, filter);
   const patterns = projectType === "typescript" ? TYPESCRIPT_PATTERNS : GO_PATTERNS;
   const language = projectType === "typescript" ? "typescript" : "go";
   const definitions: DefinitionRecord[] = [];
+  const fileMetas: FileMeta[] = [];
 
   for (const filePath of files) {
     const relativePath = toProjectRelative(projectPath, filePath);
     const content = readFileSync(filePath, "utf-8");
+    const stat = statSync(filePath);
+    fileMetas.push({
+      path: relativePath,
+      mtimeMs: stat.mtimeMs,
+      size: stat.size,
+    });
     const lines = content.split(/\r?\n/);
 
     lines.forEach((lineText, index) => {
@@ -104,7 +124,7 @@ function extractDefinitions(projectPath: string, projectType: ProjectType): Defi
     });
   }
 
-  return definitions;
+  return { definitions, files: fileMetas };
 }
 
 function writeSQLite(dbPath: string, definitions: DefinitionRecord[], projectPath: string, projectType: ProjectType, scipPath: string): void {
@@ -167,7 +187,7 @@ export async function buildIndex(projectPath: string, projectType?: ProjectType)
     return { success: false, error: `indexer produced no output at ${layout.scipPath}` };
   }
 
-  const definitions = extractDefinitions(projectPath, detectedType);
+  const { definitions, files } = extractDefinitions(projectPath, detectedType);
   writeSQLite(layout.dbPath, definitions, projectPath, detectedType, layout.scipPath);
 
   const manifest: ProjectManifest = {
@@ -177,7 +197,8 @@ export async function buildIndex(projectPath: string, projectType?: ProjectType)
     scipPath: layout.scipPath,
     dbPath: layout.dbPath,
     definitionCount: definitions.length,
-    sourceFileCount: collectSourceFiles(projectPath, detectedType).length,
+    sourceFileCount: files.length,
+    files,
   };
   writeFileSync(layout.manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
 
@@ -188,6 +209,7 @@ export async function buildIndex(projectPath: string, projectType?: ProjectType)
     scipPath: layout.scipPath,
     dbPath: layout.dbPath,
     definitionCount: definitions.length,
-    sourceFileCount: manifest.sourceFileCount,
+    sourceFileCount: files.length,
+    files,
   };
 }
