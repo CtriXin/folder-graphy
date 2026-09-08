@@ -1,5 +1,5 @@
 import { existsSync, statSync } from "fs";
-import { resolve } from "path";
+import { fileURLToPath } from "url";
 import { execFileSync } from "child_process";
 import { findProjectRoot, resolveMapLayout } from "../project.js";
 
@@ -55,9 +55,9 @@ export async function triggerMap(projectRoot: string, config?: Partial<MindKeepe
     return false;
   }
 
-  const mapCli = resolve(root, "dist/cli/map.js");
+  const mapCli = fileURLToPath(new URL("../cli/map.js", import.meta.url));
   try {
-    execFileSync("node", [mapCli, root], {
+    execFileSync(process.execPath, [mapCli, root], {
       cwd: root,
       stdio: cfg.silent ? "pipe" : "inherit",
       timeout: 60_000,

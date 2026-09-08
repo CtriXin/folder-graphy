@@ -76,11 +76,11 @@ map-find handleMessage --json
 
 #### Claude Code / Agent 集成
 
-添加到 `~/.claude/hooks/session-start.sh`：
+按当前任务需要显式构建，不注册 SessionStart hook：
 
 ```bash
-# 自动为新项目构建索引
-map . 2>/dev/null || true
+# 显式构建当前项目索引
+map .
 ```
 
 Agent 可以直接调用：
@@ -183,7 +183,7 @@ Existing tools (LSP, gopls) are too heavy:
 |---------|-------------|
 | **Lightweight** | No AST, regex-based, index 50k files in 2s |
 | **Good Enough** | Agent workflow: locate symbol → read file → answer |
-| **Automatic** | Session hook auto-maintains index |
+| **Explicit** | Index/query when the current task needs it |
 | **Structured** | JSON output for Agent consumption |
 | **Self-healing** | Query checks stale index and rebuilds when needed |
 | **Monorepo-aware** | Prefers nearby app/package results and supports scope/changed queries |
@@ -236,11 +236,11 @@ map-find handleMessage --json
 
 #### Claude Code / Agent Integration
 
-Add to `~/.claude/hooks/session-start.sh`:
+Build explicitly when needed by the current task; do not register a SessionStart hook:
 
 ```bash
-# Auto-index new projects
-map . 2>/dev/null || true
+# Explicitly index the current project
+map .
 ```
 
 Agent can call directly:
